@@ -1,7 +1,11 @@
+import controller.Controller;
+import java.util.LinkedList;
+import model.Model;
+import model.Music;
+import view.View;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Работай пж");
-        System.out.println("Почти заработал");
+        
     }
 }

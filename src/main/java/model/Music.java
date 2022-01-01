@@ -1,20 +1,18 @@
 package model;
 
 public class Music {
-    private String name;
+    private String trackName;
     private String author;
-    private String albrum;
+    private String genre;
     private int length;
-    private GenreOfMusic genre;
     
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() { return trackName; }
+    public void setName(String name) { this.trackName = name; }
     public String getAuthor() { return author; }
     public void setAuthor(String author) { this.author = author; }
-    public String getAlbrum() { return albrum; }
     public int getLength() { return length; }
     public void serLength(int length) { this.length = length; }
-    public GenreOfMusic getGenre() { return genre; }
-    public void setGenre(GenreOfMusic genre) { this.genre = genre; }
+    public String getGenre() { return genre; }
+    public void setGenre(String genre) { this.genre = genre; }
     
 }
