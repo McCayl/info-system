@@ -1,14 +1,15 @@
 package model;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 
-public class Album {
+public class Album implements Serializable {
     private LinkedList <Music> trackList;
-    private String albumName;
+    private String title;
     
     public LinkedList <Music> getTrackList() { return trackList; }
     public void setTrackList(LinkedList <Music> trackList) { this.trackList = trackList; }
-    public String getAlbumName() { return albumName; }
-    public void setAlbumName(String albumName) { this.albumName = albumName; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
      
 }

@@ -1,14 +1,15 @@
 package model;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 
-public class Model {
+public class Model implements Serializable {
     private LinkedList <Music> trackList;
     private LinkedList <Album> albums;
     
     public LinkedList <Music> getTrackList() { return trackList; }
     public void setTrackList(LinkedList <Music> trackList) { this.trackList = trackList; }
     public LinkedList <Album> getAlbums() { return albums; }
-    public void setAlbums(LinkedList albums) { this.albums = albums; }
+    public void setAlbums(LinkedList <Album> albums) { this.albums = albums; }
     
 }
