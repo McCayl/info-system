@@ -8,10 +8,6 @@ import model.Track;
 
 public class View {
 
-    /**
-     * Need menu, print methods or something :^) -Ok, it will be done
-     */
-
     public void printWrongMessage() {
         System.out.println("Something went wrong");
     }
@@ -51,11 +47,6 @@ public class View {
         }
     }
     
-    public void printAlbum(Album album) {
-        System.out.println("Album title: " + album.getTitle());
-        printTrackList(album.getTrackList());
-    }
-    
     public void printListOfAlbums(ArrayList <Album> albums) {
         if(albums == null) {
             System.out.println("No albums\n");
@@ -82,43 +73,35 @@ public class View {
     //add set del serialize
     public void printFirstLvlMenu(int codeOfResult) throws IOException {
         clearScreen();
-        if(codeOfResult == -1){
-            wrongKeyTyped();
+        switch (codeOfResult) {
+            case (-1) -> wrongKeyTyped();
+            case (-2) -> actionFailed();
+            case (1) -> actionSuccess();
         }
-        else if(codeOfResult == -2){
-            actionFailed();
-        }
-        else if(codeOfResult == 1){
-            actionSuccess();
-        }
-        System.out.println("\tMusic Library by 32\n\n");
-        System.out.println("  Choose action:");
-        System.out.println("1. Show Tracks");
-        System.out.println("2. Show Albums");
-        System.out.println("3. Save");
-        System.out.println("4. Load");
-        System.out.println("0. EXIT");
+        System.out.println(
+                "Music Library" +
+                "\nChoose action:" +
+                "\n1. Show Tracks" +
+                "\n2. Show Albums" +
+                "\n3. Save" +
+                "\n4. Load" +
+                "\n0. EXIT");
     }
 
     public void printSecondLvlTrackMenu(ArrayList <Track> trackList, int codeOfResult) throws IOException {
         clearScreen();
-        if(codeOfResult == -1){
-            wrongKeyTyped();
+        switch (codeOfResult) {
+            case (-1) -> wrongKeyTyped();
+            case (-2) -> actionFailed();
+            case (1) -> actionSuccess();
         }
-        else if(codeOfResult == -2){
-            actionFailed();
-        }
-        else if(codeOfResult == 1){
-            actionSuccess();
-        }
-        System.out.println("\tMusic Library by 32\n");
         printTrackList(trackList);
-        System.out.println("  Choose action:");
-        System.out.println("\n");
-        System.out.println("1. Add Track");
-        System.out.println("2. Edit Track");
-        System.out.println("3. Delete Track");
-        System.out.println("0. Back");
+        System.out.println(
+                "Choose action:" +
+                "\n1. Add Track" +
+                "\n2. Edit Track" +
+                "\n3. Delete Track" +
+                "\n0. Back");
     }
 
     public void printSecondLvlAlbumMenu(ArrayList <Album> albums, int codeOfResult) throws IOException {
@@ -126,53 +109,43 @@ public class View {
         if(codeOfResult == -1){
             wrongKeyTyped();
         }
-        System.out.println("\tMusic Library by 32\n");
         printListOfAlbums(albums);
-        System.out.println("  Choose action:");
-        System.out.println("\n");
-        System.out.println("1. Add Album");
-        System.out.println("2. Edit Album");
-        System.out.println("3. Delete Album");
-        System.out.println("0. Back");
+        System.out.println(
+                "Choose action:" +
+                "\n1. Add Album" +
+                "\n2. Edit Album" +
+                "\n3. Delete Album" +
+                "\n0. Back");
     }
 
-    public void printAlbumAddMenu(int codeOfResult){
+    public void printAlbumAddMenu(int codeOfResult) {
         clearScreen();
-        if(codeOfResult == -1){
-            wrongKeyTyped();
+        switch (codeOfResult) {
+            case (-1) -> wrongKeyTyped();
+            case (-3) -> noTracksAvailable();
+            case (1) -> actionSuccess();
         }
-        else if(codeOfResult == -3){
-            noTracksAvailable();
-        }
-        else if(codeOfResult ==1){
-            actionSuccess();
-        }
-        System.out.println("\tMusic Library by 32\n");
-        System.out.println("  Choose action:");
-        System.out.println("\n");
-        System.out.println("1. Add a new track");
-        System.out.println("2. Add an existing track");
+        System.out.println(
+                "Choose action:" +
+                "\n1. Add a new track" +
+                "\n2. Add an existing track");
     }
 
     public void printTrackEditMenu(Track track, int codeOfResult) throws IOException {
         clearScreen();
-        if(codeOfResult == -1){
-            wrongKeyTyped();
+        switch (codeOfResult) {
+            case (-1) -> wrongKeyTyped();
+            case (-2) -> actionFailed();
+            case (1) -> actionSuccess();
         }
-        else if(codeOfResult == -2){
-            actionFailed();
-        }
-        else if(codeOfResult == 1){
-            actionSuccess();
-        }
-        System.out.println("Selected track: ");
         printTrack(track);
-        System.out.println("\nChoose action: ");
-        System.out.println("1. Edit name");
-        System.out.println("2. Edit author");
-        System.out.println("3. Edit genre");
-        System.out.println("4. Edit length");
-        System.out.println("5. Edit name of album");
-        System.out.println("0. Back");
+        System.out.println(
+                "Choose action:" +
+                "\n1. Edit name" +
+                "\n2. Edit author" +
+                "\n3. Edit genre" +
+                "\n4. Edit length" +
+                "\n5. Edit name of album" +
+                "\n0. Back");
     }
 }

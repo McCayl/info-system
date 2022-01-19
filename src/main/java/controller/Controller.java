@@ -91,13 +91,13 @@ public class Controller {
         model.getTrackList().add(track);
     }
 
-    public void add(Track... tracks) {
+    public void addTracks(Track... tracks) {
         for (int i = 0; i != tracks.length; i++) {
             addTrack(tracks[i]);
         }
     }
 
-    public void set(int index, Track track) {
+    public void setTrack(int index, Track track) {
         if (isInvalidIndex(index) || isInvalidTrack(track)) {
             view.printWrongMessage();
             return;
@@ -108,13 +108,13 @@ public class Controller {
         model.getTrackList().set(index, track);
     }
 
-    public void set(int[] indexes, Track[] tracks) {
+    public void setTracks(int[] indexes, Track[] tracks) {
         for (int i = 0; i != indexes.length; i++) {
-            set(indexes[i], tracks[i]);
+            setTrack(indexes[i], tracks[i]);
         }
     }
 
-    public void del(int index) {
+    public void delTrack(int index) {
         if (isInvalidIndex(index)) {
             view.printWrongMessage();
             return;
@@ -129,9 +129,9 @@ public class Controller {
         model.getTrackList().remove(el);
     }
 
-    public void del(int... indexes) {
+    public void delTracks(int... indexes) {
         for (int i = 0; i != indexes.length; i++) {
-            del(indexes[i]);
+            delTrack(indexes[i]);
         }
     }
 
@@ -333,7 +333,7 @@ public class Controller {
                         }
                     }
                     int delInd = getIndexOfTrack(newTrack.getTitle());
-                    del(delInd);
+                    delTrack(delInd);
                     addTrack(newTrack);
                     codeOfResult = 1;
                     if (last) {
@@ -353,7 +353,7 @@ public class Controller {
         if ((index = isValidChoose(trackList.size() - 1)) == -1) {
             return -2;
         } else {
-            del(index-1);
+            delTrack(index-1);
         }
         return 1;
     }
