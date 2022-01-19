@@ -1,11 +1,6 @@
 import controller.Controller;
-
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.Scanner;
-
 import model.Model;
-import model.Music;
 import view.View;
 
 
