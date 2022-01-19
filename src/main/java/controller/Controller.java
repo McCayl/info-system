@@ -6,7 +6,6 @@ import model.Music;
 import view.View;
 
 import java.io.*;
-import java.util.Formatter;
 import java.util.InputMismatchException;
 import java.util.LinkedList;
 import java.util.Scanner;
@@ -33,9 +32,18 @@ public class Controller {
         return album;
     }
 
+    private int getIndexOfAlbum(String title){
+        for(int i = 0; i < model.getAlbums().size(); i++){
+            if(model.getAlbums().get(i).getTitle().equals(title)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
     private int getIndexOfTrack(String title) {
-        for(int i = 0; i < model.getTrackList().size(); i++) {
-            if (model.getTrackList().get(i).getTitle().equals(title)){
+        for (int i = 0; i < model.getTrackList().size(); i++) {
+            if (model.getTrackList().get(i).getTitle().equals(title)) {
                 return i;
             }
         }
@@ -161,36 +169,52 @@ public class Controller {
                 continue;
             }
             switch (choose) {
-                case (1) -> workWithSecondLvlTrackMenu();
-                case (2) -> workWithSecondLvlAlbumMenu();
-                case (3) -> {
-                    System.out.println("Enter path to save: ");
-                    Scanner scanner = new Scanner(System.in);
-                    String path = scanner.nextLine() + "/library";
-                    File file = new File(path);
-                    if(!file.exists())
-                        file.createNewFile();
-                    OutputStream output = new FileOutputStream(path);
-                    serialize(output);
-                    codeOfResult = 1;
-                }
-                case (4) -> {
-                    System.out.println("Enter path to load: ");
-                    Scanner scanner = new Scanner(System.in);
-                    String path = scanner.nextLine()+ "/library";
-                    File file = new File(path);
-                    if(!file.exists()){
+                case (1):
+                    workWithSecondLvlTrackMenu();
+                    break;
+                case (2):
+                    workWithSecondLvlAlbumMenu();
+                    break;
+                case (3):
+                    System.out.println("Enter the path to the folder to save: ");
+                    try {
+                        Scanner scanner = new Scanner(System.in);
+                        String path = scanner.nextLine() + "/library";
+                        File file = new File(path);
+                        if (!file.exists()) {
+                            if (!file.createNewFile()) {
+                                throw new IOException();
+                            }
+                        }
+                        OutputStream output = new FileOutputStream(path);
+                        serialize(output);
+                        codeOfResult = 1;
+                        output.close();
+                    } catch (IOException exception) {
                         codeOfResult = -2;
-                        continue;
                     }
-                    try (InputStream input = new FileInputStream(path)) {
+                    break;
+                case (4):
+                    System.out.println("Enter the path to the folder to load: ");
+                    try {
+                        Scanner scanner = new Scanner(System.in);
+                        String path = scanner.nextLine() + "/library";
+                        File file = new File(path);
+                        if (!file.exists()) {
+                            codeOfResult = -2;
+                            continue;
+                        }
+                        InputStream input = new FileInputStream(path);
                         deserialize(input);
-                    }
-                    catch (IOException | ClassNotFoundException exception){
+                        codeOfResult = 1;
+                        input.close();
+                    } catch (IOException | ClassNotFoundException exception) {
                         exception.printStackTrace();
+                        codeOfResult = -2;
                     }
-                }
-                case (0) -> System.exit(0);
+                    break;
+                case (0):
+                    System.exit(0);
             }
         }
     }
@@ -230,11 +254,10 @@ public class Controller {
         track.setAuthor(scanner.nextLine());
         System.out.print("\nInput genre of track: ");
         track.setGenre(scanner.nextLine());
-        if(!isAlbumTrack){
+        if (!isAlbumTrack) {
             System.out.print("\nInput album title of track: ");
             track.setAlbumTitle(scanner.nextLine());
-        }
-        else {
+        } else {
             track.setAlbumTitle("not");
         }
         System.out.print("\nInput length of track: ");
@@ -298,18 +321,22 @@ public class Controller {
 
                     boolean last = false;
                     System.out.println("Input new album name of track: ");
-                    Music newTrack = (Music)trackList.get(index).clone();
+                    Music newTrack = (Music) trackList.get(index).clone();
+                    String oldName = newTrack.getAlbumTitle();
                     scanner.nextLine();
                     newTrack.setAlbumTitle(scanner.nextLine());
-                    if(isAlbumTrack){
+                    if (isAlbumTrack) {
                         trackList.remove(index);
-                        last = true;
+                        if(trackList.isEmpty()) {
+                            last = true;
+                            model.getAlbums().remove(getIndexOfAlbum(oldName));
+                        }
                     }
                     int delInd = getIndexOfTrack(newTrack.getTitle());
                     del(delInd);
                     add(newTrack);
                     codeOfResult = 1;
-                    if(last){
+                    if (last) {
                         return 1;
                     }
                     break;
@@ -326,7 +353,7 @@ public class Controller {
         if ((index = isValidChoose(trackList.size() - 1)) == -1) {
             return -2;
         } else {
-            del(index);
+            del(index-1);
         }
         return 1;
     }
@@ -399,21 +426,19 @@ public class Controller {
                 continue;
             }
             switch (choose) {
-                case (1) -> {
+                case (1):
                     workWithAddTrackMenu(true);
                     model.getAlbums().add(album);
                     model.getTrackList().getLast().setAlbumTitle(album.getTitle());
-                    album.addTrack( model.getTrackList().getLast());
-
+                    album.addTrack(model.getTrackList().getLast());
                     return 1;
-                }
-                case (2) -> {
+                case (2):
                     int result;
                     if ((result = addExistTrackToAlbum(album)) == -3) {
                         codeOfResult = -3;
-                    } else
+                    }
+                    else
                         return result;
-                }
             }
         }
     }
@@ -426,7 +451,7 @@ public class Controller {
         int index;
         int codeOfResult = 0;
         try {
-            index = scanner.nextInt()-1;
+            index = scanner.nextInt() - 1;
         } catch (InputMismatchException exception) {
             return -2;
         }
@@ -445,7 +470,7 @@ public class Controller {
                     break;
                 case (3):
                     workWithDeleteTrackMenu(model.getAlbums().get(index).getTrackList());
-                    if(model.getAlbums().get(index).getTrackList().isEmpty()){
+                    if (model.getAlbums().get(index).getTrackList().isEmpty()) {
                         model.getAlbums().remove(index);
                         return 1;
                     }
@@ -456,18 +481,18 @@ public class Controller {
         }
     }
 
-    private int workWithDeleteAlbumMenu(){
+    private int workWithDeleteAlbumMenu() {
         View.clearScreen();
         Scanner scanner = new Scanner(System.in);
         System.out.println("Input index of album for edit: ");
         int index;
         try {
-            index = scanner.nextInt();
+            index = scanner.nextInt() - 1;
         } catch (InputMismatchException exception) {
             return -2;
         }
-        for (Music track:model.getTrackList()){
-            if (track.getAlbumTitle().equals(model.getAlbums().get(index).getTitle())){
+        for (Music track : model.getTrackList()) {
+            if (track.getAlbumTitle().equals(model.getAlbums().get(index).getTitle())) {
                 track.setAlbumTitle("not");
             }
         }
