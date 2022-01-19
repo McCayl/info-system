@@ -484,7 +484,7 @@ public class Controller {
     private int workWithDeleteAlbumMenu() {
         View.clearScreen();
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Input index of album for edit: ");
+        System.out.println("Input index of album for delete: ");
         int index;
         try {
             index = scanner.nextInt() - 1;
@@ -500,4 +500,3 @@ public class Controller {
         return 1;
     }
 }
-//TODO удаление
