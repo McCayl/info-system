@@ -2,7 +2,7 @@ package model;
 
 import java.io.Serializable;
 
-public class Music implements Serializable, Cloneable {
+public class Track implements Serializable, Cloneable {
     private String title;
     private String author;
     private String genre;
@@ -19,14 +19,15 @@ public class Music implements Serializable, Cloneable {
     public void setGenre(String genre) { this.genre = genre; }
     public String getAlbumTitle() { return albumTitle; }
     public void setAlbumTitle(String albumName) { this.albumTitle = albumName; }
-    public String getFormatLength(){
+
+    public String getFormatLength() {
         int min = length/60;
         int sec = length%60;
         return min + ":" + sec;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         if(albumTitle.equals("not")) {
             return "Name: " + title + ", author: " + author + ", genre: " + genre + ", length: " + getFormatLength();
         }
@@ -36,8 +37,8 @@ public class Music implements Serializable, Cloneable {
         }
     }
 
-    public Object clone(){
-        Music track = new Music();
+    public Object clone() {
+        Track track = new Track();
         track.setTitle(title);
         track.setAuthor(author);
         track.setGenre(genre);

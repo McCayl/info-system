@@ -1,18 +1,21 @@
 package model;
 
 import java.io.Serializable;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class Album implements Serializable {
-    private LinkedList <Music> trackList;
+    private ArrayList <Track> trackList;
     private String title;
 
     public Album(){
-        trackList = new LinkedList<>();
+        trackList = new ArrayList<>();
     }
-    public LinkedList <Music> getTrackList() { return trackList; }
-    public void setTrackList(LinkedList <Music> trackList) { this.trackList = trackList; }
-    public void addTrack(Music track) {
+    public ArrayList <Track> getTrackList() { return trackList; }
+    public void setTrackList(ArrayList <Track> trackList) { this.trackList = trackList; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
+    public void addTrack(Track track) {
         if (trackList.contains(track)) {
             System.out.println("This track is already exist");
             return;
@@ -24,7 +27,5 @@ public class Album implements Serializable {
             System.out.println("This track is already on the album");
         }
     }
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
      
 }

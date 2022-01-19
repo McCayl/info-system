@@ -2,12 +2,12 @@ package controller;
 
 import model.Album;
 import model.Model;
-import model.Music;
+import model.Track;
 import view.View;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.LinkedList;
 import java.util.Scanner;
 
 public class Controller {
@@ -27,7 +27,7 @@ public class Controller {
         }
         Album album = new Album();
         album.setTitle(title);
-        album.setTrackList(new LinkedList<>());
+        album.setTrackList(new ArrayList<>());
         model.getAlbums().add(album);
         return album;
     }
@@ -57,7 +57,7 @@ public class Controller {
         return index >= model.getTrackList().size();
     }
 
-    private boolean isInvalidTrack(Music track) {
+    private boolean isInvalidTrack(Track track) {
         if (track == null) {
             return true;
         }
@@ -76,7 +76,7 @@ public class Controller {
         return track.getLength() <= 0;
     }
 
-    public void add(Music track) {
+    public void addTrack(Track track) {
         if (isInvalidTrack(track)) {
             view.printWrongMessage();
             return;
@@ -91,13 +91,13 @@ public class Controller {
         model.getTrackList().add(track);
     }
 
-    public void add(Music... tracks) {
+    public void add(Track... tracks) {
         for (int i = 0; i != tracks.length; i++) {
-            add(tracks[i]);
+            addTrack(tracks[i]);
         }
     }
 
-    public void set(int index, Music track) {
+    public void set(int index, Track track) {
         if (isInvalidIndex(index) || isInvalidTrack(track)) {
             view.printWrongMessage();
             return;
@@ -108,7 +108,7 @@ public class Controller {
         model.getTrackList().set(index, track);
     }
 
-    public void set(int[] indexes, Music[] tracks) {
+    public void set(int[] indexes, Track[] tracks) {
         for (int i = 0; i != indexes.length; i++) {
             set(indexes[i], tracks[i]);
         }
@@ -119,7 +119,7 @@ public class Controller {
             view.printWrongMessage();
             return;
         }
-        Music el = model.getTrackList().get(index);
+        Track el = model.getTrackList().get(index);
         if (!(el.getTitle().equals("not"))) {
             getAlbum(el.getTitle()).getTrackList().remove(el);
         }
@@ -247,7 +247,7 @@ public class Controller {
     private int workWithAddTrackMenu(boolean isAlbumTrack) {
         View.clearScreen();
         Scanner scanner = new Scanner(System.in);
-        Music track = new Music();
+        Track track = new Track();
         System.out.print("Input track name: ");
         track.setTitle(scanner.nextLine());
         System.out.print("\nInput author of track: ");
@@ -266,11 +266,11 @@ public class Controller {
         } catch (InputMismatchException exception) {
             return -2;
         }
-        add(track);
+        addTrack(track);
         return 1;
     }
 
-    private int workWithEditTrackMenu(LinkedList<Music> trackList, boolean isAlbumTrack) throws IOException {
+    private int workWithEditTrackMenu(ArrayList<Track> trackList, boolean isAlbumTrack) throws IOException {
         View.clearScreen();
         Scanner scanner = new Scanner(System.in);
         scanner.useDelimiter("\n");
@@ -321,7 +321,7 @@ public class Controller {
 
                     boolean last = false;
                     System.out.println("Input new album name of track: ");
-                    Music newTrack = (Music) trackList.get(index).clone();
+                    Track newTrack = (Track) trackList.get(index).clone();
                     String oldName = newTrack.getAlbumTitle();
                     scanner.nextLine();
                     newTrack.setAlbumTitle(scanner.nextLine());
@@ -334,7 +334,7 @@ public class Controller {
                     }
                     int delInd = getIndexOfTrack(newTrack.getTitle());
                     del(delInd);
-                    add(newTrack);
+                    addTrack(newTrack);
                     codeOfResult = 1;
                     if (last) {
                         return 1;
@@ -346,7 +346,7 @@ public class Controller {
         }
     }
 
-    private int workWithDeleteTrackMenu(LinkedList<Music> trackList) {
+    private int workWithDeleteTrackMenu(ArrayList<Track> trackList) {
         View.clearScreen();
         System.out.println("Input index of track for delete: ");
         int index;
@@ -387,7 +387,7 @@ public class Controller {
         int count = 1;
         int index;
         View.clearScreen();
-        LinkedList<Music> tmp = new LinkedList<>();
+        ArrayList<Track> tmp = new ArrayList<>();
         for (int i = 0; i < model.getTrackList().size(); i++) {
             if (model.getTrackList().get(i).getAlbumTitle().equals("not")) {
                 System.out.println(count + ". " + model.getTrackList().get(i).getTitle());
@@ -429,8 +429,8 @@ public class Controller {
                 case (1):
                     workWithAddTrackMenu(true);
                     model.getAlbums().add(album);
-                    model.getTrackList().getLast().setAlbumTitle(album.getTitle());
-                    album.addTrack(model.getTrackList().getLast());
+                    model.getTrackList().get(model.getTrackList().size() - 1).setAlbumTitle(album.getTitle());
+                    album.addTrack(model.getTrackList().get(model.getTrackList().size() - 1));
                     return 1;
                 case (2):
                     int result;
@@ -491,7 +491,7 @@ public class Controller {
         } catch (InputMismatchException exception) {
             return -2;
         }
-        for (Music track : model.getTrackList()) {
+        for (Track track : model.getTrackList()) {
             if (track.getAlbumTitle().equals(model.getAlbums().get(index).getTitle())) {
                 track.setAlbumTitle("not");
             }

@@ -1,9 +1,10 @@
 package view;
 
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.ArrayList;
+
 import model.Album;
-import model.Music;
+import model.Track;
 
 public class View {
 
@@ -35,11 +36,11 @@ public class View {
         System.out.println("There are no tracks that are not in the album");
     }
 
-    public void printTrack(Music track) {
+    public void printTrack(Track track) {
         System.out.println(track);
     }
 
-    public void printTrackList(LinkedList <Music> trackList) {
+    public void printTrackList(ArrayList<Track> trackList) {
         if(trackList == null) {
             System.out.println("No tracks\n");
             return;
@@ -55,7 +56,7 @@ public class View {
         printTrackList(album.getTrackList());
     }
     
-    public void printListOfAlbums(LinkedList <Album> albums) {
+    public void printListOfAlbums(ArrayList <Album> albums) {
         if(albums == null) {
             System.out.println("No albums\n");
             return;
@@ -99,7 +100,7 @@ public class View {
         System.out.println("0. EXIT");
     }
 
-    public void printSecondLvlTrackMenu(LinkedList <Music> trackList, int codeOfResult) throws IOException {
+    public void printSecondLvlTrackMenu(ArrayList <Track> trackList, int codeOfResult) throws IOException {
         clearScreen();
         if(codeOfResult == -1){
             wrongKeyTyped();
@@ -120,7 +121,7 @@ public class View {
         System.out.println("0. Back");
     }
 
-    public void printSecondLvlAlbumMenu(LinkedList <Album> albums, int codeOfResult) throws IOException {
+    public void printSecondLvlAlbumMenu(ArrayList <Album> albums, int codeOfResult) throws IOException {
         clearScreen();
         if(codeOfResult == -1){
             wrongKeyTyped();
@@ -153,7 +154,7 @@ public class View {
         System.out.println("2. Add an existing track");
     }
 
-    public void printTrackEditMenu(Music track, int codeOfResult) throws IOException {
+    public void printTrackEditMenu(Track track, int codeOfResult) throws IOException {
         clearScreen();
         if(codeOfResult == -1){
             wrongKeyTyped();
