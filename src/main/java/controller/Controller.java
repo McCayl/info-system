@@ -206,7 +206,7 @@ public class Controller {
                     break;
                 case (6):
                     try {
-                        String path = view.getString("Enter the path to the folder to save: ");
+                        String path = view.getString("Enter the path to the file for save: ");
                         File file = new File(path);
                         if (!file.exists()) {
                             if (!file.createNewFile()) {
@@ -223,7 +223,7 @@ public class Controller {
                     break;
                 case (7):
                     try {
-                        String path = view.getString("Enter the path to the folder to load: ");
+                        String path = view.getString("Enter the path to the file for load: ");
                         File file = new File(path);
                         if (!file.exists()) {
                             codeOfResult = "Action failed due to user error(wrong path)";
