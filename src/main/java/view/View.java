@@ -66,63 +66,69 @@ public class View {
     public void printFirstLvlMenu(String result) {
         System.out.println(result + "\n");
         System.out.println(
-                "Music Library" +
-                "\nChoose action:" +
-                "\n1. Show list of tracks" +
-                "\n2. Show list of albums" +
-                "\n3. Show list of associations" +
-                "\n4. Work with tracks" +
-                "\n5. Work with albums" +
-                "\n6. Save library" +
-                "\n7. Load library" +
-                "\n0. EXIT");
+                """
+                        Music Library
+                        Choose action:
+                        1. Show list of tracks
+                        2. Show list of albums
+                        3. Show list of associations
+                        4. Work with tracks
+                        5. Work with albums
+                        6. Save library
+                        7. Load library
+                        0. EXIT""");
     }
 
     public void printSecondLvlTrackMenu(String result, boolean isAlbum) {
         System.out.println(result + "\n");
         if(!isAlbum)
             System.out.println(
-                "Choose action:" +
-                "\n1. Add Track" +
-                "\n2. Edit Track" +
-                "\n3. Delete Track" +
-                "\n0. Back");
+                    """
+                            Choose action:
+                            1. Add Track
+                            2. Edit Track
+                            3. Delete Track
+                            0. Back""");
         else
             System.out.println(
-                "Choose action:" +
-                        "\n1. Add Track" +
-                        "\n2. Delete Track" +
-                        "\n3. Change Year" +
-                        "\n0. Back");
+                    """
+                            Choose action:
+                            1. Add Track
+                            2. Delete Track
+                            3. Change Year
+                            0. Back""");
     }
 
     public void printSecondLvlAlbumMenu(String result) {
         System.out.println(result + "\n");
         System.out.println(
-                "Choose action:" +
-                "\n1. Add Album" +
-                "\n2. Edit Album" +
-                "\n3. Delete Album" +
-                "\n0. Back");
+                """
+                        Choose action:
+                        1. Add Album
+                        2. Edit Album
+                        3. Delete Album
+                        0. Back""");
     }
 
     public void printAlbumAddMenu(String result) {
         System.out.println(result + "\n");
         System.out.println(
-                "Choose action:" +
-                "\n1. Add a new track" +
-                "\n2. Add an existing track");
+                """
+                        Choose action:
+                        1. Add a new track
+                        2. Add an existing track""");
     }
 
     public void printTrackEditMenu(Track track, String result) {
         System.out.println(result + "\n");
         printTrack(track);
         System.out.println(
-                "Choose action:" +
-                "\n1. Edit name" +
-                "\n2. Edit author" +
-                "\n3. Edit genre" +
-                "\n4. Edit length" +
-                "\n0. Back");
+                """
+                        Choose action:
+                        1. Edit name
+                        2. Edit author
+                        3. Edit genre
+                        4. Edit length
+                        0. Back""");
     }
 }
