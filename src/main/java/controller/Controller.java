@@ -208,6 +208,8 @@ public class Controller {
                     break;
                 case (6):
                     try {
+                        view.print("You can write only the file name " +
+                                   "then the file will be created in the program directory\n");
                         String path = view.getString("Enter the path to the file for save: ");
                         File file = new File(path);
                         if (!file.exists()) {
