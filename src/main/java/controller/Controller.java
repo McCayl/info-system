@@ -7,7 +7,7 @@ import model.Track;
 import view.View;
 
 import java.io.*;
-import java.util.ArrayList;
+
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -97,11 +97,11 @@ public class Controller {
     public void addTrackToAlbum(String trackTitle, String albumTitle) {
         Multimap <String, String> map = model.getAssociationMap();
         if (!(map.containsKey(albumTitle))) {
-            view.printWrongMessage();
+            //view.printWrongMessage();
             return;
         }
         if (map.containsEntry(albumTitle, trackTitle)) {
-            view.printWrongMessage();
+            //view.printWrongMessage();
             return;
         }
         map.put(albumTitle, trackTitle);
@@ -109,11 +109,11 @@ public class Controller {
 
     public void addAlbum(Album album) {
         if (isInvalidAlbum(album)) {
-            view.printWrongMessage();
+            //view.printWrongMessage();
             return;
         }
         if (model.getAlbums().contains(album)) {
-            view.printWrongMessage();
+            //view.printWrongMessage();
             return;
         }
         model.getAssociationMap().put(album.getTitle(), "");
@@ -122,11 +122,11 @@ public class Controller {
 
     public void setTrack(Track track) {
         if (isInvalidTrack(track)) {
-            view.printWrongMessage();
+            //view.printWrongMessage();
             return;
         }
         if (!(model.getTrackList().contains(track))) {
-            view.printWrongMessage();
+            //view.printWrongMessage();
             return;
         }
         model.getTrackList().set(getIndexOfTrack(track.getTitle()), track);
@@ -134,15 +134,15 @@ public class Controller {
 
     public void setAlbumTrack(String albumTitle, Track track) {
         if (isInvalidTrack(track) || albumTitle == null) {
-            view.printWrongMessage();
+            //view.printWrongMessage();
             return;
         }
         if (!(model.getAssociationMap().containsKey(albumTitle))) {
-            view.printWrongMessage();
+            //view.printWrongMessage();
             return;
         }
         if (getTrack(track.getTitle()) == null) {
-            view.printWrongMessage();
+            //view.printWrongMessage();
             return;
         }
         model.getTrackList().set(getIndexOfTrack(track.getTitle()), track);
@@ -150,11 +150,11 @@ public class Controller {
 
     public void setAlbum(Album album) {
         if (isInvalidAlbum(album)) {
-            view.printWrongMessage();
+            //view.printWrongMessage();
             return;
         }
         if (!(model.getAlbums().contains(album))) {
-            view.printWrongMessage();
+            //view.printWrongMessage();
             return;
         }
         model.getAlbums().set(getIndexOfAlbum(album.getTitle()), album);
@@ -171,11 +171,11 @@ public class Controller {
 
     public void delTrack(String trackTitle) {
         if (trackTitle == null) {
-            view.printWrongMessage();
+            //view.printWrongMessage();
             return;
         }
         if (getTrack(trackTitle) == null) {
-            view.printWrongMessage();
+            //view.printWrongMessage();
             return;
         }
         Track track = getTrack(trackTitle);
@@ -212,13 +212,13 @@ public class Controller {
     }
 
     public void serialize(OutputStream out) throws IOException {
-        ObjectOutputStream objouts = new ObjectOutputStream(out);
-        objouts.writeObject(model);
+        ObjectOutputStream objectOut = new ObjectOutputStream(out);
+        objectOut.writeObject(model);
     }
 
     public void deserialize(InputStream in) throws IOException, ClassNotFoundException {
-        ObjectInputStream objins = new ObjectInputStream(in);
-        model = (Model) objins.readObject();
+        ObjectInputStream objectIn = new ObjectInputStream(in);
+        model = (Model) objectIn.readObject();
     }
 
     private int isValidChoose(int countOfChoose) {
@@ -235,32 +235,32 @@ public class Controller {
         return choose;
     }
 
-    public void workWithFirstLvlMenu() throws IOException {
+    public void workWithFirstLvlMenu() {
         int choose;
-        int codeOfResult = 0;
+        String codeOfResult = "";
         while (true) {
             view.printFirstLvlMenu(codeOfResult);
             if ((choose = isValidChoose(7)) == -1) {
-                codeOfResult = -1;
+                codeOfResult = "You typed to incorrect key, please try again ;)";
                 continue;
             }
             switch (choose) {
                 case (1):
-                    codeOfResult = workWithSecondLvlTrackListMenu();
+                    workWithSecondLvlTrackListMenu();
                     break;
                 case (2):
-                    codeOfResult = workWithSecondLvlAlbumListMenu();
+                    workWithSecondLvlAlbumListMenu();
                     break;
                 case (3):
-                    codeOfResult = workWithSecondLvlAssociationsListMenu();
+                    workWithSecondLvlAssociationsListMenu();
                     break;
                 case (4):
                     workWithSecondLvlTrackListEdit();
-                    codeOfResult = 0;
+                    codeOfResult = "";
                     break;
                 case (5):
                     workWithSecondLvlAlbumListEdit();
-                    codeOfResult = 0;
+                    codeOfResult = "";
                     break;
                 case (6):
                     try {
@@ -273,10 +273,10 @@ public class Controller {
                         }
                         OutputStream output = new FileOutputStream(path);
                         serialize(output);
-                        codeOfResult = 1;
+                        codeOfResult = "Action successfully completed";
                         output.close();
                     } catch (IOException exception) {
-                        codeOfResult = -2;
+                        codeOfResult = "Action failed due to user error(wrong path)";
                     }
                     break;
                 case (7):
@@ -284,16 +284,16 @@ public class Controller {
                         String path = view.getString("Enter the path to the folder to load: ");
                         File file = new File(path);
                         if (!file.exists()) {
-                            codeOfResult = -2;
+                            codeOfResult = "Action failed due to user error(wrong path)";
                             continue;
                         }
                         InputStream input = new FileInputStream(path);
                         deserialize(input);
-                        codeOfResult = 1;
+                        codeOfResult = "Action successfully completed";
                         input.close();
                     } catch (IOException | ClassNotFoundException exception) {
                         exception.printStackTrace();
-                        codeOfResult = -2;
+                        codeOfResult = "Action failed due to user error(wrong path)";
                     }
                     break;
                 case (0):
@@ -302,31 +302,28 @@ public class Controller {
         }
     }
 
-    public int workWithSecondLvlTrackListMenu() {
+    public void workWithSecondLvlTrackListMenu() {
         view.printTrackList(model.getTrackList());
         view.getString("Input something to return: ");
-        return 0;
     }
 
-    public int workWithSecondLvlAlbumListMenu() {
+    public void workWithSecondLvlAlbumListMenu() {
         view.printListOfAlbums(model.getAlbums());
         view.getString("Input something to return: ");
-        return 0;
     }
 
-    public int workWithSecondLvlAssociationsListMenu() {
+    public void workWithSecondLvlAssociationsListMenu() {
         view.printListOfAssociations(model.getAssociationMap());
         view.getString("Input something to return: ");
-        return 0;
     }
 
-    private void workWithSecondLvlTrackListEdit() throws IOException {
+    private void workWithSecondLvlTrackListEdit() {
         int choose;
-        int codeOfResult = 0;
+        String codeOfResult = "";
         while (true) {
-            view.printSecondLvlTrackMenu(codeOfResult);
+            view.printSecondLvlTrackMenu(codeOfResult, false);
             if ((choose = isValidChoose(3)) == -1) {
-                codeOfResult = -1;
+                codeOfResult = "You typed to incorrect key, please try again ;)";
                 continue;
             }
             switch (choose) {
@@ -345,7 +342,7 @@ public class Controller {
         }
     }
 
-    private int workWithAddTrackMenu() {
+    private String workWithAddTrackMenu() {
         Track track = new Track();
         track.setTitle(view.getString("Input track name: "));
         track.setAuthor(view.getString("Input author of track: "));
@@ -353,71 +350,71 @@ public class Controller {
         try {
             track.setLength(Integer.parseInt(view.getString("Input length of track: ")));
         } catch (NumberFormatException exception) {
-            return -2;
+            return "Action failed due to user error(non-numeric value of the length)";
         }
         addTrack(track);
-        return 1;
+        return "Action successfully completed";
     }
 
-    private int workWithEditTrackMenu() throws IOException {
+    private String workWithEditTrackMenu() {
         int choose;
         Track track;
-        int codeOfResult = 0;
+        String codeOfResult = "";
         track = getTrack(view.getString("Input name of track for edit: "));
         if(track==null){
-            return -2;
+            return "Action failed due to user error(Track doesn't exist)";
         }
         while (true) {
             view.printTrackEditMenu(track, codeOfResult);
             if ((choose = isValidChoose(4)) == -1) {
-                codeOfResult = -1;
+                codeOfResult = "You typed to incorrect key, please try again ;)";
                 continue;
             }
             switch (choose) {
                 case (1):
                     track.setTitle(view.getString("Input new name of track: "));
-                    codeOfResult = 1;
+                    codeOfResult = "Action successfully completed";
                     break;
                 case (2):
                     track.setAuthor(view.getString("Input new author of track: "));
-                    codeOfResult = 1;
+                    codeOfResult = "Action successfully completed";
                     break;
                 case (3):
                     track.setGenre(view.getString("Input new genre of track: "));
-                    codeOfResult = 1;
+                    codeOfResult = "Action successfully completed";
                     break;
                 case (4):
                     try {
                         track.setLength(Integer.parseInt(view.getString("Input new length of track (in sec): ")));
                     } catch (NumberFormatException exception) {
-                        codeOfResult = -2;
+                        codeOfResult = "Action failed due to user error(non-numeric value of the length)";
                         break;
                     }
-                    codeOfResult = 1;
+                    codeOfResult = "Action successfully completed";
                     break;
                 case (0):
-                    return 0;
+                    return "";
             }
         }
     }
 
-    private int workWithDeleteTrackMenu() {
+    private String workWithDeleteTrackMenu() {
         Track track = getTrack(view.getString("Input name of track for delete: "));
         if (track==null) {
-            return -2;
+            return "Action failed due to user error(Track doesn't exist)";
         } else {
             delTrack(track.getTitle());
         }
-        return 1;
+        return "Action successfully completed";
     }
 
-    private void workWithSecondLvlAlbumListEdit() throws IOException {
+    private void workWithSecondLvlAlbumListEdit() {
         int choose;
-        int codeOfResult = 0;
+        String codeOfResult = "";
         while (true) {
             view.printSecondLvlAlbumMenu(codeOfResult);
             if ((choose = isValidChoose(3)) == -1) {
-                codeOfResult = -1;
+                codeOfResult = "You typed to incorrect key, please try again ;)";
                 continue;
             }
             switch (choose) {
@@ -436,47 +433,20 @@ public class Controller {
         }
     }
 
-    /*private int addExistTrackToAlbum(Album album) {
-        int count = 1;
-        int index;
-        View.clearScreen();
-        ArrayList<Track> tmp = new ArrayList<>();
-        for (int i = 0; i < model.getTrackList().size(); i++) {
-            if (model.getTrackList().get(i).getAlbumTitle().equals("not")) {
-                System.out.println(count + ". " + model.getTrackList().get(i).getTitle());
-                tmp.add(model.getTrackList().get(i));
-                count++;
-            }
-        }
-        count--;
-        if (count == 0) {
-            return -3;
-        }
-        while (true) {
-            System.out.print("Choose index of track: ");
-            if ((index = isValidChoose(count)) == -1) {
-                view.wrongKeyTyped();
-            } else {
-                album.addTrack(tmp.get(index));
-                return 1;
-            }
-        }
-    }*/
-
-    private int workWithAddAlbumMenu() {
+    private String workWithAddAlbumMenu() {
         int choose;
-        int codeOfResult = 0;
+        String codeOfResult = "";
         Album album;
         try {
             album = new Album(view.getString("Input name of album: "), Integer.parseInt(view.getString("Input year of album: ")));
         }catch (NumberFormatException exception){
-            return -2;
+            return "Action failed due to user error(non-numeric value of the year)";
         }
         view.print("The album cannot be empty, so you need to create a track in it or select an existing one\n");
         while (true) {
             view.printAlbumAddMenu(codeOfResult);
             if ((choose = isValidChoose(2)) == -1) {
-                codeOfResult = -1;
+                codeOfResult = "You typed to incorrect key, please try again ;)";
                 continue;
             }
             switch (choose) {
@@ -488,62 +458,62 @@ public class Controller {
                     break;
                 case (2):
                     if(model.getTrackList().isEmpty()) {
-                        codeOfResult = -3;
+                        codeOfResult = "Action failed due to user error(Tracks don't exist)";
                         continue;
                     }
                     addAlbum(album);
-                    String trackName = view.getString("Input name of track to add in album: ");
+                    String trackName = view.getString("Input name of track for add in album: ");
                     addTrackToAlbum(trackName, album.getTitle());
                     model.getAssociationMap().remove(album.getTitle(), "");
                     break;
             }
             if (model.getAssociationMap().containsEntry(album.getTitle(),
                     model.getTrackList().get(model.getTrackList().size() - 1).getTitle()))
-                return 1;
+                return "Action successfully completed";
             else
-                return -1;
+                return "Action failed";
 
         }
     }
 
-    private int workWithEditAlbumMenu() throws IOException {
+    private String workWithEditAlbumMenu() {
         int choose;
         String albumName;
-        int codeOfResult = 0;
+        String codeOfResult = "";
         albumName = view.getString("Input name of album for edit: ");
         while (true) {
-            view.printSecondLvlTrackMenu(codeOfResult);
-            if ((choose = isValidChoose(3)) == -1) {
-                codeOfResult = -1;
+            view.printSecondLvlTrackMenu(codeOfResult, true);
+            if ((choose = isValidChoose(2)) == -1) {
+                codeOfResult = "You typed to incorrect key, please try again ;)";
                 continue;
             }
             switch (choose) {
                 case (1):
-                    if((codeOfResult = workWithAddTrackMenu()) == 1)
-                        addTrackToAlbum(model.getTrackList().get(model.getTrackList().size() - 1).getTitle(), albumName);
+                    String trackName = view.getString("Input name of track for add to album: ");
+                    if(getTrack(trackName)!=null){
+                        addTrackToAlbum(trackName, albumName);
+                    }
+                    else return "Action failed due to user error(Track doesn't exist)";
                     break;
                 case (2):
-                    codeOfResult = workWithEditTrackMenu();
-                    break;
-                case (3):
                     codeOfResult = workWithDeleteTrackMenu();
                     if (model.getAssociationMap().get(albumName).isEmpty()) {
                         delAlbum(albumName);
-                        return 1;
+                        return "Action successfully completed";
                     }
                     break;
                 case (0):
-                    return 0;
+                    return "";
             }
         }
     }
 
-    private int workWithDeleteAlbumMenu() {
+    private String workWithDeleteAlbumMenu() {
         String albumName = view.getString("Input name of album for delete: ");
         if(getAlbum(albumName)!=null) {
             model.getAssociationMap().removeAll(albumName);
-            return 1;
+            return "Action successfully completed";
         }
-        else return -2;
+        else return "Action failed due to user error(Album doesn't exist)";
     }
 }

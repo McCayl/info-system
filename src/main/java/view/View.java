@@ -1,6 +1,5 @@
 package view;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -19,22 +18,6 @@ public class View {
 
     public void printTrackExist() {
         System.out.println("This track is already exist");
-    }
-
-    public void actionFailed() {
-        System.out.println("Action failed due to user error");
-    }
-
-    public void actionSuccess() {
-        System.out.println("Action successfully completed");
-    }
-
-    public void wrongKeyTyped() {
-        System.out.println("You typed to incorrect key, please try again ;)");
-    }
-
-    public void noTracksAvailable() {
-        System.out.println("There are no tracks that are not in the album");
     }
 
     public String getString(String str) {
@@ -87,24 +70,8 @@ public class View {
         }
     }
 
-    public static void clearScreen() {
-        try {
-            if (System.getProperty("os.name").contains("Windows"))
-                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-            else
-                Runtime.getRuntime().exec("cls");
-        } catch (IOException | InterruptedException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public void printFirstLvlMenu(int codeOfResult) throws IOException {
-        //clearScreen();
-        switch (codeOfResult) {
-            case (-1) -> wrongKeyTyped();
-            case (-2) -> actionFailed();
-            case (1) -> actionSuccess();
-        }
+    public void printFirstLvlMenu(String result) {
+        System.out.println(result + "\n");
         System.out.println(
                 "Music Library" +
                 "\nChoose action:" +
@@ -118,26 +85,25 @@ public class View {
                 "\n0. EXIT");
     }
 
-    public void printSecondLvlTrackMenu(int codeOfResult) throws IOException {
-        //clearScreen();
-        switch (codeOfResult) {
-            case (-1) -> wrongKeyTyped();
-            case (-2) -> actionFailed();
-            case (1) -> actionSuccess();
-        }
-        System.out.println(
+    public void printSecondLvlTrackMenu(String result, boolean isAlbum) {
+        System.out.println(result + "\n");
+        if(!isAlbum)
+            System.out.println(
                 "Choose action:" +
                 "\n1. Add Track" +
                 "\n2. Edit Track" +
                 "\n3. Delete Track" +
                 "\n0. Back");
+        else
+            System.out.println(
+                "Choose action:" +
+                        "\n1. Add Track" +
+                        "\n2. Delete Track" +
+                        "\n0. Back");
     }
 
-    public void printSecondLvlAlbumMenu(int codeOfResult) throws IOException {
-        //clearScreen();
-        if(codeOfResult == -1){
-            wrongKeyTyped();
-        }
+    public void printSecondLvlAlbumMenu(String result) {
+        System.out.println(result + "\n");
         System.out.println(
                 "Choose action:" +
                 "\n1. Add Album" +
@@ -146,27 +112,16 @@ public class View {
                 "\n0. Back");
     }
 
-    public void printAlbumAddMenu(int codeOfResult) {
-        //clearScreen();
-        switch (codeOfResult) {
-            case (-1) -> wrongKeyTyped();
-            case (-2) -> actionFailed();
-            case (-3) -> noTracksAvailable();
-            case (1) -> actionSuccess();
-        }
+    public void printAlbumAddMenu(String result) {
+        System.out.println(result + "\n");
         System.out.println(
                 "Choose action:" +
                 "\n1. Add a new track" +
                 "\n2. Add an existing track");
     }
 
-    public void printTrackEditMenu(Track track, int codeOfResult) throws IOException {
-        //clearScreen();
-        switch (codeOfResult) {
-            case (-1) -> wrongKeyTyped();
-            case (-2) -> actionFailed();
-            case (1) -> actionSuccess();
-        }
+    public void printTrackEditMenu(Track track, String result) {
+        System.out.println(result + "\n");
         printTrack(track);
         System.out.println(
                 "Choose action:" +
