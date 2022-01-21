@@ -83,10 +83,11 @@ public class Controller {
             return;
         }
         if (map.containsEntry(albumTitle, trackTitle)) {
-            view.print("The album does not contain a track with that name");
+            view.print("The album already contain a track with that name");
             return;
         }
         map.put(albumTitle, trackTitle);
+        view.print("Action successfully performed");
     }
 
     public void addAlbum(Album album) {
@@ -108,6 +109,7 @@ public class Controller {
             if (map.get(key).contains(trackTitle)) {
                 map.remove(key, trackTitle);
             }
+            view.print("Action successfully performed");
         }
     }
 
@@ -397,6 +399,7 @@ public class Controller {
                     addAlbum(album);
                     addTrackToAlbum(model.getTrackList().get(model.getTrackList().size() - 1).getTitle(), album.getTitle());
                     model.getAssociationMap().remove(album.getTitle(), "");
+
                 }
                 case (2) -> {
                     if (model.getTrackList().isEmpty()) {
@@ -469,7 +472,7 @@ public class Controller {
     private String workWithDeleteAlbumMenu() {
         String albumName = view.getString("Input name of album for delete: ");
         if(getAlbum(albumName)!=null) {
-            model.getAssociationMap().removeAll(albumName);
+            delAlbum(albumName);
             return "Action successfully completed";
         }
         else return "Action failed due to user error(Album doesn't exist)";
