@@ -13,6 +13,11 @@ public class Album implements Serializable {
     public Album(){
         trackList = new ArrayList<>();
     }
+    public Album(String title, int year){
+        this.title = title;
+        this.year = year;
+        trackList = new ArrayList<>();
+    }
     public ArrayList <Track> getTrackList() { return trackList; }
     public void setTrackList(ArrayList <Track> trackList) { this.trackList = trackList; }
     public String getTitle() { return title; }
