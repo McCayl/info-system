@@ -56,15 +56,6 @@ public class Controller {
         return -1;
     }
 
-    private boolean isInvalidTrackIndex(int index) {
-        if (index < 0) { return true; }
-        return index >= model.getTrackList().size();
-    }
-
-    private boolean isInvalidAlTrackIndex(String albumTitle, int trackIndex) {
-        return getAlbum(albumTitle).getTrackList().get(trackIndex) == null;
-    }
-
     private boolean isInvalidTrack(Track track) {
         if (track == null) {
             return true;
@@ -94,11 +85,6 @@ public class Controller {
         return album.getYear() <= 0;
     }
 
-    private boolean isInvalidAlIndex(int index) {
-        if (index < 0) { return true; }
-        return index >= model.getAlbums().size();
-    }
-
     public void addTrack(Track track) {
         if (isInvalidTrack(track)) {
             view.printWrongMessage();
@@ -111,37 +97,17 @@ public class Controller {
         model.getTrackList().add(track);
     }
 
-    public void addTrackToAlbum(Track track, String albumTitle) {
-        if (isInvalidTrack(track)) {
+    public void addTrackToAlbum(String trackTitle, String albumTitle) {
+        Multimap <String, String> map = model.getAssociationMap();
+        if (!(map.containsKey(albumTitle))) {
             view.printWrongMessage();
             return;
         }
-        if (albumTitle == null) {
+        if (map.containsEntry(albumTitle, trackTitle)) {
             view.printWrongMessage();
             return;
         }
-        Album currentAlbum = getAlbum(albumTitle);
-        if (currentAlbum == null) {
-            view.printWrongMessage();
-            return;
-        }
-        if (currentAlbum.getTrackList().contains(track)) {
-            view.printTrackExist();
-            return;
-        }
-        if (!(model.getTrackList().contains(track))) {
-            model.getTrackList().add(track);
-        }
-        currentAlbum.getTrackList().add(track);
-        model.getAssociationMap().put(albumTitle, track.getTitle());
-    }
-
-    private ArrayList <String> getAlTrackTitles(Album album) {
-        ArrayList <String> result = new ArrayList<>();
-        for (Track track : album.getTrackList()) {
-            result.add(track.getTitle());
-        }
-        return result;
+        map.put(albumTitle, trackTitle);
     }
 
     public void addAlbum(Album album) {
@@ -153,12 +119,12 @@ public class Controller {
             view.printWrongMessage();
             return;
         }
-        model.getAssociationMap().putAll(album.getTitle(), getAlTrackTitles(album));
+        model.getAssociationMap().putAll(album.getTitle(), new ArrayList<String>());
         model.getAlbums().add(album);
     }
 
-    public void setTrack(int index, Track track) {
-        if (isInvalidTrackIndex(index) || isInvalidTrack(track)) {
+    public void setTrack(Track track) {
+        if (isInvalidTrack(track)) {
             view.printWrongMessage();
             return;
         }
@@ -166,24 +132,27 @@ public class Controller {
             view.printWrongMessage();
             return;
         }
-        model.getTrackList().set(index, track);
+        model.getTrackList().set(getIndexOfTrack(track.getTitle()), track);
     }
 
-    public void setAlbumTrack(String albumTitle, int index, Track track) {
-        if (getAlbum(albumTitle) == null ||
-            getTrack(track.getTitle()) == null) {
+    public void setAlbumTrack(String albumTitle, Track track) {
+        if (isInvalidTrack(track) || albumTitle == null) {
             view.printWrongMessage();
             return;
         }
-        if (isInvalidAlTrackIndex(albumTitle, index)) {
+        if (!(model.getAssociationMap().containsKey(albumTitle))) {
             view.printWrongMessage();
             return;
         }
-        getAlbum(albumTitle).getTrackList().set(index, track);
+        if (getTrack(track.getTitle()) == null) {
+            view.printWrongMessage();
+            return;
+        }
+        model.getTrackList().set(getIndexOfTrack(track.getTitle()), track);
     }
 
-    public void setAlbum(int index, Album album) {
-        if (isInvalidAlbum(album) || isInvalidAlIndex(index)) {
+    public void setAlbum(Album album) {
+        if (isInvalidAlbum(album)) {
             view.printWrongMessage();
             return;
         }
@@ -191,16 +160,14 @@ public class Controller {
             view.printWrongMessage();
             return;
         }
-        model.getAlbums().set(index, album);
+        model.getAlbums().set(getIndexOfAlbum(album.getTitle()), album);
     }
 
     private void delTrackFromAlbums(String trackTitle) {
         Multimap <String, String> map = model.getAssociationMap();
-        Track track = getTrack(trackTitle);
         for (String key : map.keySet()) {
             if (map.get(key).contains(trackTitle)) {
                 map.remove(key, trackTitle);
-                getAlbum(key).getTrackList().remove(track);
             }
         }
     }
@@ -230,8 +197,12 @@ public class Controller {
             view.printWrongMessage();
             return;
         }
-        model.getAssociationMap().remove(albumTitle, trackTitle);
-        getAlbum(albumTitle).getTrackList().remove(getTrack(trackTitle));
+        Multimap <String, String> map = model.getAssociationMap();
+        if (!(map.containsEntry(albumTitle, trackTitle))) {
+            view.printWrongMessage();
+            return;
+        }
+        map.remove(albumTitle, trackTitle);
     }
 
     public void delAlbum(String albumTitle) {
