@@ -79,9 +79,6 @@ public class Controller {
         if (album.getTitle() == null) {
             return true;
         }
-        if (album.getTrackList() == null) {
-            return true;
-        }
         return album.getYear() <= 0;
     }
 
@@ -119,7 +116,7 @@ public class Controller {
             view.printWrongMessage();
             return;
         }
-        model.getAssociationMap().putAll(album.getTitle(), new ArrayList<String>());
+        model.getAssociationMap().put(album.getTitle(), "");
         model.getAlbums().add(album);
     }
 
@@ -243,25 +240,27 @@ public class Controller {
         int codeOfResult = 0;
         while (true) {
             view.printFirstLvlMenu(codeOfResult);
-            if ((choose = isValidChoose(4)) == -1) {
+            if ((choose = isValidChoose(7)) == -1) {
                 codeOfResult = -1;
                 continue;
             }
             switch (choose) {
                 case (1):
-                    workWithSecondLvlTrackListMenu();
+                    codeOfResult = workWithSecondLvlTrackListMenu();
                     break;
                 case (2):
-                    workWithSecondLvlAlbumListMenu();
+                    codeOfResult = workWithSecondLvlAlbumListMenu();
                     break;
                 case (3):
-                    workWithSecondLvlAssociationsListMenu();
+                    codeOfResult = workWithSecondLvlAssociationsListMenu();
                     break;
                 case (4):
                     workWithSecondLvlTrackListEdit();
+                    codeOfResult = 0;
                     break;
                 case (5):
-                    //workWithSecondLvlAlbumListEdit();
+                    workWithSecondLvlAlbumListEdit();
+                    codeOfResult = 0;
                     break;
                 case (6):
                     try {
@@ -303,31 +302,22 @@ public class Controller {
         }
     }
 
-    public void workWithSecondLvlTrackListMenu() {
+    public int workWithSecondLvlTrackListMenu() {
         view.printTrackList(model.getTrackList());
-        while(true){
-            if(view.getString("Input 0 to return: ").equals("0")){
-                return;
-            }
-        }
+        view.getString("Input something to return: ");
+        return 0;
     }
 
-    public void workWithSecondLvlAlbumListMenu() {
+    public int workWithSecondLvlAlbumListMenu() {
         view.printListOfAlbums(model.getAlbums());
-        while(true){
-            if(view.getString("Input 0 to return: ").equals("0")){
-                return;
-            }
-        }
+        view.getString("Input something to return: ");
+        return 0;
     }
 
-    public void workWithSecondLvlAssociationsListMenu() {
+    public int workWithSecondLvlAssociationsListMenu() {
         view.printListOfAssociations(model.getAssociationMap());
-        while(true){
-            if(view.getString("Input 0 to return: ").equals("0")){
-                return;
-            }
-        }
+        view.getString("Input something to return: ");
+        return 0;
     }
 
     private void workWithSecondLvlTrackListEdit() throws IOException {
@@ -421,7 +411,7 @@ public class Controller {
         return 1;
     }
 
-    /*private void workWithSecondLvlAlbumListEdit() throws IOException {
+    private void workWithSecondLvlAlbumListEdit() throws IOException {
         int choose;
         int codeOfResult = 0;
         while (true) {
@@ -446,7 +436,7 @@ public class Controller {
         }
     }
 
-    private int addExistTrackToAlbum(Album album) {
+    /*private int addExistTrackToAlbum(Album album) {
         int count = 1;
         int index;
         View.clearScreen();
@@ -471,19 +461,18 @@ public class Controller {
                 return 1;
             }
         }
-    }
+    }*/
 
     private int workWithAddAlbumMenu() {
         int choose;
         int codeOfResult = 0;
+        Album album;
         try {
-            Album album = new Album(view.getString("Input name of album: "), Integer.parseInt(view.getString("Input year of album: ")));
+            album = new Album(view.getString("Input name of album: "), Integer.parseInt(view.getString("Input year of album: ")));
         }catch (NumberFormatException exception){
             return -2;
         }
-        System.out.print("Input album name: ");
-        album.setTitle(scanner.nextLine());
-        System.out.println("The album cannot be empty, so you need to create a track in it or select an existing one\n");
+        view.print("The album cannot be empty, so you need to create a track in it or select an existing one\n");
         while (true) {
             view.printAlbumAddMenu(codeOfResult);
             if ((choose = isValidChoose(2)) == -1) {
@@ -492,51 +481,54 @@ public class Controller {
             }
             switch (choose) {
                 case (1):
-                    workWithAddTrackMenu(true);
-                    model.getAlbums().add(album);
-                    model.getTrackList().get(model.getTrackList().size() - 1).setAlbumTitle(album.getTitle());
-                    album.addTrack(model.getTrackList().get(model.getTrackList().size() - 1));
-                    return 1;
+                    workWithAddTrackMenu();
+                    addAlbum(album);
+                    addTrackToAlbum(model.getTrackList().get(model.getTrackList().size() - 1).getTitle(), album.getTitle());
+                    model.getAssociationMap().remove(album.getTitle(), "");
+                    break;
                 case (2):
-                    int result;
-                    if ((result = addExistTrackToAlbum(album)) == -3) {
+                    if(model.getTrackList().isEmpty()) {
                         codeOfResult = -3;
+                        continue;
                     }
-                    else
-                        return result;
+                    addAlbum(album);
+                    String trackName = view.getString("Input name of track to add in album: ");
+                    addTrackToAlbum(trackName, album.getTitle());
+                    model.getAssociationMap().remove(album.getTitle(), "");
+                    break;
             }
+            if (model.getAssociationMap().containsEntry(album.getTitle(),
+                    model.getTrackList().get(model.getTrackList().size() - 1).getTitle()))
+                return 1;
+            else
+                return -1;
+
         }
     }
 
     private int workWithEditAlbumMenu() throws IOException {
-        View.clearScreen();
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Input index of album for edit: ");
         int choose;
-        int index;
+        String albumName;
         int codeOfResult = 0;
-        try {
-            index = scanner.nextInt() - 1;
-        } catch (InputMismatchException exception) {
-            return -2;
-        }
+        albumName = view.getString("Input name of album for edit: ");
         while (true) {
-            view.printSecondLvlTrackMenu(model.getAlbums().get(index).getTrackList(), codeOfResult);
+            view.printSecondLvlTrackMenu(codeOfResult);
             if ((choose = isValidChoose(3)) == -1) {
                 codeOfResult = -1;
                 continue;
             }
             switch (choose) {
                 case (1):
-                    workWithAddTrackMenu(true);
+                    if((codeOfResult = workWithAddTrackMenu()) == 1)
+                        addTrackToAlbum(model.getTrackList().get(model.getTrackList().size() - 1).getTitle(), albumName);
                     break;
                 case (2):
-                    workWithEditTrackMenu(model.getAlbums().get(index).getTrackList(), true);
+                    codeOfResult = workWithEditTrackMenu();
                     break;
                 case (3):
-                    workWithDeleteTrackMenu(model.getAlbums().get(index).getTrackList());
-                    if (model.getAlbums().get(index).getTrackList().isEmpty()) {
-                        model.getAlbums().remove(index);
+                    codeOfResult = workWithDeleteTrackMenu();
+                    if (model.getAssociationMap().get(albumName).isEmpty()) {
+                        delAlbum(albumName);
                         return 1;
                     }
                     break;
@@ -547,21 +539,11 @@ public class Controller {
     }
 
     private int workWithDeleteAlbumMenu() {
-        View.clearScreen();
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Input index of album for delete: ");
-        int index;
-        try {
-            index = scanner.nextInt() - 1;
-        } catch (InputMismatchException exception) {
-            return -2;
+        String albumName = view.getString("Input name of album for delete: ");
+        if(getAlbum(albumName)!=null) {
+            model.getAssociationMap().removeAll(albumName);
+            return 1;
         }
-        for (Track track : model.getTrackList()) {
-            if (track.getAlbumTitle().equals(model.getAlbums().get(index).getTitle())) {
-                track.setAlbumTitle("not");
-            }
-        }
-        model.getAlbums().remove(index);
-        return 1;
-    }*/
+        else return -2;
+    }
 }

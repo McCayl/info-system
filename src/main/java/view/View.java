@@ -42,8 +42,12 @@ public class View {
         String string;
         do {
             string = scanner.nextLine();
-        } while(!string.isEmpty());
+        } while(string.isEmpty());
         return string;
+    }
+
+    public void print(String str){
+        System.out.print(str);
     }
 
     public void printTrack(Track track) {
@@ -78,8 +82,8 @@ public class View {
 
     public void printListOfAssociations(Multimap<String, String> associationMap){
         System.out.println("List of associations: ");
-        for (String album: associationMap.keys()) {
-                System.out.print(album + ": " + associationMap.get(album));
+        for (String album: associationMap.keySet()) {
+                System.out.print(album + ": " + associationMap.get(album) + "\n");
         }
     }
 
@@ -106,7 +110,7 @@ public class View {
                 "\nChoose action:" +
                 "\n1. Show list of tracks" +
                 "\n2. Show list of albums" +
-                "\n3. Show list of links" +
+                "\n3. Show list of associations" +
                 "\n4. Work with tracks" +
                 "\n5. Work with albums" +
                 "\n6. Save library" +
@@ -143,9 +147,10 @@ public class View {
     }
 
     public void printAlbumAddMenu(int codeOfResult) {
-        clearScreen();
+        //clearScreen();
         switch (codeOfResult) {
             case (-1) -> wrongKeyTyped();
+            case (-2) -> actionFailed();
             case (-3) -> noTracksAvailable();
             case (1) -> actionSuccess();
         }
