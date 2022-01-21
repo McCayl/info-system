@@ -449,6 +449,17 @@ public class Controller {
                         return "Action successfully completed";
                     }
                     break;
+                case (3):
+                    int year;
+                    try{
+                        year = Integer.parseInt(view.getString("Input year to change: "));
+                    } catch (NumberFormatException exception){
+                        return "Action failed due to user error(non-numeric value of the year)";
+                    }
+                    getAlbum(albumName).setYear(year);
+                    if(getAlbum(albumName).getYear() == year)
+                        return "Action successfully performed";
+                    break;
                 case (0):
                     return "";
             }
