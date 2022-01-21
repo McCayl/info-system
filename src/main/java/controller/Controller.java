@@ -70,7 +70,7 @@ public class Controller {
             return;
         }
         if (model.getTrackList().contains(track)) {
-            view.print("Track doesn't exist");
+            view.print("Track already exist");
             return;
         }
         model.getTrackList().add(track);
@@ -297,7 +297,7 @@ public class Controller {
             return "Action failed due to user error(non-numeric value of the length)";
         }
         addTrack(track);
-        return "Action successfully completed";
+        return "";
     }
 
     private String workWithEditTrackMenu() {
