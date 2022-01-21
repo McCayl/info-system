@@ -4,7 +4,7 @@ import com.google.common.base.Objects;
 
 import java.io.Serializable;
 
-public class Track implements Serializable, Cloneable {
+public class Track implements Serializable {
     private String title;
     private String author;
     private String genre;
@@ -44,14 +44,5 @@ public class Track implements Serializable, Cloneable {
     @Override
     public int hashCode() {
         return Objects.hashCode(title, author, genre, length);
-    }
-
-    public Object clone() {
-        Track track = new Track();
-        track.setTitle(title);
-        track.setAuthor(author);
-        track.setGenre(genre);
-        track.setLength(length);
-        return track;
     }
 }

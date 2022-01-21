@@ -12,13 +12,6 @@ public class View {
     public View() {
         scanner = new Scanner(System.in);
     }
-    public void printWrongMessage() {
-        System.out.println("Something went wrong");
-    }
-
-    public void printTrackExist() {
-        System.out.println("This track is already exist");
-    }
 
     public String getString(String str) {
         System.out.print(str);
@@ -99,6 +92,7 @@ public class View {
                 "Choose action:" +
                         "\n1. Add Track" +
                         "\n2. Delete Track" +
+                        "\n3. Change Year" +
                         "\n0. Back");
     }
 

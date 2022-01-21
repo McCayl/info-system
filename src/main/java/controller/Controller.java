@@ -38,24 +38,6 @@ public class Controller {
         return null;
     }
 
-    private int getIndexOfAlbum(String title){
-        for(int i = 0; i < model.getAlbums().size(); i++){
-            if(model.getAlbums().get(i).getTitle().equals(title)){
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    private int getIndexOfTrack(String title) {
-        for (int i = 0; i < model.getTrackList().size(); i++) {
-            if (model.getTrackList().get(i).getTitle().equals(title)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     private boolean isInvalidTrack(Track track) {
         if (track == null) {
             return true;
@@ -84,11 +66,11 @@ public class Controller {
 
     public void addTrack(Track track) {
         if (isInvalidTrack(track)) {
-            view.printWrongMessage();
+            view.print("Track is invalid");
             return;
         }
         if (model.getTrackList().contains(track)) {
-            view.printTrackExist();
+            view.print("Track doesn't exist");
             return;
         }
         model.getTrackList().add(track);
@@ -97,11 +79,11 @@ public class Controller {
     public void addTrackToAlbum(String trackTitle, String albumTitle) {
         Multimap <String, String> map = model.getAssociationMap();
         if (!(map.containsKey(albumTitle))) {
-            //view.printWrongMessage();
+            view.print("Album doesn't exist");
             return;
         }
         if (map.containsEntry(albumTitle, trackTitle)) {
-            //view.printWrongMessage();
+            view.print("The album does not contain a track with that name");
             return;
         }
         map.put(albumTitle, trackTitle);
@@ -109,55 +91,15 @@ public class Controller {
 
     public void addAlbum(Album album) {
         if (isInvalidAlbum(album)) {
-            //view.printWrongMessage();
+            view.print("Album is invalid");
             return;
         }
         if (model.getAlbums().contains(album)) {
-            //view.printWrongMessage();
+            view.print("Album doesn't exist");
             return;
         }
         model.getAssociationMap().put(album.getTitle(), "");
         model.getAlbums().add(album);
-    }
-
-    public void setTrack(Track track) {
-        if (isInvalidTrack(track)) {
-            //view.printWrongMessage();
-            return;
-        }
-        if (!(model.getTrackList().contains(track))) {
-            //view.printWrongMessage();
-            return;
-        }
-        model.getTrackList().set(getIndexOfTrack(track.getTitle()), track);
-    }
-
-    public void setAlbumTrack(String albumTitle, Track track) {
-        if (isInvalidTrack(track) || albumTitle == null) {
-            //view.printWrongMessage();
-            return;
-        }
-        if (!(model.getAssociationMap().containsKey(albumTitle))) {
-            //view.printWrongMessage();
-            return;
-        }
-        if (getTrack(track.getTitle()) == null) {
-            //view.printWrongMessage();
-            return;
-        }
-        model.getTrackList().set(getIndexOfTrack(track.getTitle()), track);
-    }
-
-    public void setAlbum(Album album) {
-        if (isInvalidAlbum(album)) {
-            //view.printWrongMessage();
-            return;
-        }
-        if (!(model.getAlbums().contains(album))) {
-            //view.printWrongMessage();
-            return;
-        }
-        model.getAlbums().set(getIndexOfAlbum(album.getTitle()), album);
     }
 
     private void delTrackFromAlbums(String trackTitle) {
@@ -171,11 +113,11 @@ public class Controller {
 
     public void delTrack(String trackTitle) {
         if (trackTitle == null) {
-            //view.printWrongMessage();
+            view.print("Album name is invalid");
             return;
         }
         if (getTrack(trackTitle) == null) {
-            //view.printWrongMessage();
+            view.print("Track doesn't exist");
             return;
         }
         Track track = getTrack(trackTitle);
@@ -186,17 +128,17 @@ public class Controller {
     public void delAlbumTrack(String trackTitle, String albumTitle) {
         if (albumTitle == null ||
             trackTitle == null) {
-            view.printWrongMessage();
+            view.print("Album or track name is invalid");
             return;
         }
         if (getAlbum(albumTitle) == null ||
             getTrack(trackTitle) == null) {
-            view.printWrongMessage();
+            view.print("Album or track doesn't exist");
             return;
         }
         Multimap <String, String> map = model.getAssociationMap();
         if (!(map.containsEntry(albumTitle, trackTitle))) {
-            view.printWrongMessage();
+            view.print("The album does not contain a track with that name");
             return;
         }
         map.remove(albumTitle, trackTitle);
@@ -204,7 +146,7 @@ public class Controller {
 
     public void delAlbum(String albumTitle) {
         if (albumTitle == null || getAlbum(albumTitle) == null) {
-            view.printWrongMessage();
+            view.print("Album doesn't exist");
             return;
         }
         model.getAssociationMap().removeAll(albumTitle);
@@ -450,14 +392,14 @@ public class Controller {
                 continue;
             }
             switch (choose) {
-                case (1):
+                case (1) -> {
                     workWithAddTrackMenu();
                     addAlbum(album);
                     addTrackToAlbum(model.getTrackList().get(model.getTrackList().size() - 1).getTitle(), album.getTitle());
                     model.getAssociationMap().remove(album.getTitle(), "");
-                    break;
-                case (2):
-                    if(model.getTrackList().isEmpty()) {
+                }
+                case (2) -> {
+                    if (model.getTrackList().isEmpty()) {
                         codeOfResult = "Action failed due to user error(Tracks don't exist)";
                         continue;
                     }
@@ -465,7 +407,7 @@ public class Controller {
                     String trackName = view.getString("Input name of track for add in album: ");
                     addTrackToAlbum(trackName, album.getTitle());
                     model.getAssociationMap().remove(album.getTitle(), "");
-                    break;
+                }
             }
             if (model.getAssociationMap().containsEntry(album.getTitle(),
                     model.getTrackList().get(model.getTrackList().size() - 1).getTitle()))
@@ -479,6 +421,7 @@ public class Controller {
     private String workWithEditAlbumMenu() {
         int choose;
         String albumName;
+        String trackName;
         String codeOfResult = "";
         albumName = view.getString("Input name of album for edit: ");
         while (true) {
@@ -489,14 +432,18 @@ public class Controller {
             }
             switch (choose) {
                 case (1):
-                    String trackName = view.getString("Input name of track for add to album: ");
+                    trackName = view.getString("Input name of track for add to album: ");
                     if(getTrack(trackName)!=null){
                         addTrackToAlbum(trackName, albumName);
                     }
                     else return "Action failed due to user error(Track doesn't exist)";
                     break;
                 case (2):
-                    codeOfResult = workWithDeleteTrackMenu();
+                    trackName = view.getString("Input name of track for delete from album: ");
+                    delAlbumTrack(trackName, albumName);
+                    if(model.getAssociationMap().containsEntry(albumName, trackName)){
+                        return "Action successfully completed";
+                    }
                     if (model.getAssociationMap().get(albumName).isEmpty()) {
                         delAlbum(albumName);
                         return "Action successfully completed";
