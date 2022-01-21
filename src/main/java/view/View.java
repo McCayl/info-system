@@ -2,12 +2,17 @@ package view;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
+import com.google.common.collect.Multimap;
 import model.Album;
 import model.Track;
 
 public class View {
-
+    Scanner scanner;
+    public View() {
+        scanner = new Scanner(System.in);
+    }
     public void printWrongMessage() {
         System.out.println("Something went wrong");
     }
@@ -32,14 +37,26 @@ public class View {
         System.out.println("There are no tracks that are not in the album");
     }
 
+    public String getString(String str) {
+        System.out.print(str);
+        String string;
+        do {
+            string = scanner.nextLine();
+        } while(!string.isEmpty());
+        return string;
+    }
+
     public void printTrack(Track track) {
         System.out.println(track);
     }
 
     public void printTrackList(ArrayList<Track> trackList) {
-        if(trackList == null) {
-            System.out.println("No tracks\n");
+        if(trackList == null || trackList.isEmpty()) {
+            System.out.println("List of tracks is empty\n");
             return;
+        }
+        else {
+            System.out.println("List of tracks: ");
         }
         for (int i = 0; i != trackList.size(); i++) {
             System.out.print((i+1) + ". ");
@@ -59,6 +76,13 @@ public class View {
         System.out.println("\n");
     }
 
+    public void printListOfAssociations(Multimap<String, String> associationMap){
+        System.out.println("List of associations: ");
+        for (String album: associationMap.keys()) {
+                System.out.print(album + ": " + associationMap.get(album));
+        }
+    }
+
     public static void clearScreen() {
         try {
             if (System.getProperty("os.name").contains("Windows"))
@@ -70,9 +94,8 @@ public class View {
         }
     }
 
-    //add set del serialize
     public void printFirstLvlMenu(int codeOfResult) throws IOException {
-        clearScreen();
+        //clearScreen();
         switch (codeOfResult) {
             case (-1) -> wrongKeyTyped();
             case (-2) -> actionFailed();
@@ -81,21 +104,23 @@ public class View {
         System.out.println(
                 "Music Library" +
                 "\nChoose action:" +
-                "\n1. Show Tracks" +
-                "\n2. Show Albums" +
-                "\n3. Save" +
-                "\n4. Load" +
+                "\n1. Show list of tracks" +
+                "\n2. Show list of albums" +
+                "\n3. Show list of links" +
+                "\n4. Work with tracks" +
+                "\n5. Work with albums" +
+                "\n6. Save library" +
+                "\n7. Load library" +
                 "\n0. EXIT");
     }
 
-    public void printSecondLvlTrackMenu(ArrayList <Track> trackList, int codeOfResult) throws IOException {
-        clearScreen();
+    public void printSecondLvlTrackMenu(int codeOfResult) throws IOException {
+        //clearScreen();
         switch (codeOfResult) {
             case (-1) -> wrongKeyTyped();
             case (-2) -> actionFailed();
             case (1) -> actionSuccess();
         }
-        printTrackList(trackList);
         System.out.println(
                 "Choose action:" +
                 "\n1. Add Track" +
@@ -104,12 +129,11 @@ public class View {
                 "\n0. Back");
     }
 
-    public void printSecondLvlAlbumMenu(ArrayList <Album> albums, int codeOfResult) throws IOException {
-        clearScreen();
+    public void printSecondLvlAlbumMenu(int codeOfResult) throws IOException {
+        //clearScreen();
         if(codeOfResult == -1){
             wrongKeyTyped();
         }
-        printListOfAlbums(albums);
         System.out.println(
                 "Choose action:" +
                 "\n1. Add Album" +
@@ -132,7 +156,7 @@ public class View {
     }
 
     public void printTrackEditMenu(Track track, int codeOfResult) throws IOException {
-        clearScreen();
+        //clearScreen();
         switch (codeOfResult) {
             case (-1) -> wrongKeyTyped();
             case (-2) -> actionFailed();
@@ -145,7 +169,6 @@ public class View {
                 "\n2. Edit author" +
                 "\n3. Edit genre" +
                 "\n4. Edit length" +
-                "\n5. Edit name of album" +
                 "\n0. Back");
     }
 }
