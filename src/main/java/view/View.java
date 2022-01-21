@@ -8,7 +8,7 @@ import model.Album;
 import model.Track;
 
 public class View {
-    Scanner scanner;
+    private Scanner scanner;
     public View() {
         scanner = new Scanner(System.in);
     }

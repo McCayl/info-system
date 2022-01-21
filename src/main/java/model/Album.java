@@ -3,7 +3,6 @@ package model;
 import com.google.common.base.Objects;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 public class Album implements Serializable {
     private String title;
