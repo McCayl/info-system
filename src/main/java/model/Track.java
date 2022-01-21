@@ -1,12 +1,13 @@
 package model;
 
+import com.google.common.base.Objects;
+
 import java.io.Serializable;
 
 public class Track implements Serializable, Cloneable {
     private String title;
     private String author;
     private String genre;
-    private String albumTitle;
     private int length;
     
     public String getTitle() { return title; }
@@ -17,8 +18,6 @@ public class Track implements Serializable, Cloneable {
     public void setLength(int length) { this.length = length; }
     public String getGenre() { return genre; }
     public void setGenre(String genre) { this.genre = genre; }
-    public String getAlbumTitle() { return albumTitle; }
-    public void setAlbumTitle(String albumName) { this.albumTitle = albumName; }
 
     public String getFormatLength() {
         int min = length/60;
@@ -28,13 +27,23 @@ public class Track implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-        if(albumTitle.equals("not")) {
-            return "Name: " + title + ", author: " + author + ", genre: " + genre + ", length: " + getFormatLength();
-        }
-        else {
-            return "Name: " + title + ", author: " + author + ", genre: " + genre + ", album: " + albumTitle +
-                    ", length: " + getFormatLength();
-        }
+        return "Name: " + title + ", author: " + author + ", genre: " + genre + ", length: " + getFormatLength();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Track track = (Track) o;
+        return length == track.length &&
+                Objects.equal(title, track.title) &&
+                Objects.equal(author, track.author) &&
+                Objects.equal(genre, track.genre);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(title, author, genre, length);
     }
 
     public Object clone() {
@@ -42,7 +51,6 @@ public class Track implements Serializable, Cloneable {
         track.setTitle(title);
         track.setAuthor(author);
         track.setGenre(genre);
-        track.setAlbumTitle(albumTitle);
         track.setLength(length);
         return track;
     }
