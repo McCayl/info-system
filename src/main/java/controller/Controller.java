@@ -87,7 +87,7 @@ public class Controller {
             return;
         }
         map.put(albumTitle, trackTitle);
-        view.print("Action successfully performed");
+        //view.print("Action successfully performed");
     }
 
     public void addAlbum(Album album) {
@@ -109,7 +109,7 @@ public class Controller {
             if (map.get(key).contains(trackTitle)) {
                 map.remove(key, trackTitle);
             }
-            view.print("Action successfully performed");
+            //view.print("Action successfully performed");
         }
     }
 
@@ -299,7 +299,7 @@ public class Controller {
             return "Action failed due to user error(non-numeric value of the length)";
         }
         addTrack(track);
-        return "";
+        return "Action successfully completed";
     }
 
     private String workWithEditTrackMenu() {
@@ -312,24 +312,20 @@ public class Controller {
         }
         while (true) {
             view.printTrackEditMenu(track, codeOfResult);
-            if ((choose = isValidChoose(4)) == -1) {
+            if ((choose = isValidChoose(3)) == -1) {
                 codeOfResult = "You typed to incorrect key, please try again ;)";
                 continue;
             }
             switch (choose) {
                 case (1):
-                    track.setTitle(view.getString("Input new name of track: "));
-                    codeOfResult = "Action successfully completed";
-                    break;
-                case (2):
                     track.setAuthor(view.getString("Input new author of track: "));
                     codeOfResult = "Action successfully completed";
                     break;
-                case (3):
+                case (2):
                     track.setGenre(view.getString("Input new genre of track: "));
                     codeOfResult = "Action successfully completed";
                     break;
-                case (4):
+                case (3):
                     try {
                         track.setLength(Integer.parseInt(view.getString("Input new length of track (in sec): ")));
                     } catch (NumberFormatException exception) {
@@ -396,6 +392,9 @@ public class Controller {
                 continue;
             }
             switch (choose) {
+                case (0) -> {
+                    return "The action was interrupted by the user";
+                }
                 case (1) -> {
                     workWithAddTrackMenu();
                     addAlbum(album);

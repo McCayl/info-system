@@ -125,10 +125,9 @@ public class View {
         System.out.println(
                 """
                         Choose action:
-                        1. Edit name
-                        2. Edit author
-                        3. Edit genre
-                        4. Edit length
+                        1. Edit author
+                        2. Edit genre
+                        3. Edit length
                         0. Back""");
     }
 }
