@@ -23,7 +23,7 @@ public class View {
     }
 
     public void print(String str){
-        System.out.print(str);
+        System.out.println(str);
     }
 
     public void printTrack(Track track) {
@@ -45,8 +45,8 @@ public class View {
     }
     
     public void printListOfAlbums(ArrayList <Album> albums) {
-        if(albums == null) {
-            System.out.println("No albums\n");
+        if(albums == null || albums.isEmpty()) {
+            System.out.println("List of albums is empty\n");
             return;
         }
         System.out.println("Album title list: ");
@@ -57,6 +57,10 @@ public class View {
     }
 
     public void printListOfAssociations(Multimap<String, String> associationMap){
+        if(associationMap == null || associationMap.isEmpty()) {
+            System.out.println("List of associations is empty\n");
+            return;
+        }
         System.out.println("List of associations: ");
         for (String album: associationMap.keySet()) {
                 System.out.print(album + ": " + associationMap.get(album) + "\n");
@@ -116,7 +120,8 @@ public class View {
                 """
                         Choose action:
                         1. Add a new track
-                        2. Add an existing track""");
+                        2. Add an existing track
+                        0. Back""");
     }
 
     public void printTrackEditMenu(Track track, String result) {

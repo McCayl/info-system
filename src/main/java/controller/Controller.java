@@ -87,7 +87,7 @@ public class Controller {
             return;
         }
         map.put(albumTitle, trackTitle);
-        //view.print("Action successfully performed");
+        view.print("Action successfully performed(track add to album)");
     }
 
     public void addAlbum(Album album) {
@@ -96,7 +96,7 @@ public class Controller {
             return;
         }
         if (model.getAlbums().contains(album)) {
-            view.print("Album doesn't exist");
+            view.print("Album already exist");
             return;
         }
         model.getAssociationMap().put(album.getTitle(), "");
@@ -299,7 +299,7 @@ public class Controller {
             return "Action failed due to user error(non-numeric value of the length)";
         }
         addTrack(track);
-        return "Action successfully completed";
+        return "Action successfully completed(track create)";
     }
 
     private String workWithEditTrackMenu() {
@@ -384,6 +384,9 @@ public class Controller {
         }catch (NumberFormatException exception){
             return "Action failed due to user error(non-numeric value of the year)";
         }
+        if(getAlbum(album.getTitle()) != null){
+            return "Album already exist";
+        }
         view.print("The album cannot be empty, so you need to create a track in it or select an existing one\n");
         while (true) {
             view.printAlbumAddMenu(codeOfResult);
@@ -392,15 +395,16 @@ public class Controller {
                 continue;
             }
             switch (choose) {
-                case (0) -> {
-                    return "The action was interrupted by the user";
-                }
                 case (1) -> {
-                    workWithAddTrackMenu();
+                    if((codeOfResult = workWithAddTrackMenu()).contains("failed")){
+                        continue;
+                    }
                     addAlbum(album);
                     addTrackToAlbum(model.getTrackList().get(model.getTrackList().size() - 1).getTitle(), album.getTitle());
                     model.getAssociationMap().remove(album.getTitle(), "");
-
+                    if (!model.getAssociationMap().containsEntry(album.getTitle(),
+                            model.getTrackList().get(model.getTrackList().size() - 1).getTitle()))
+                        return "Action failed";
                 }
                 case (2) -> {
                     if (model.getTrackList().isEmpty()) {
@@ -411,14 +415,14 @@ public class Controller {
                     String trackName = view.getString("Input name of track for add in album: ");
                     addTrackToAlbum(trackName, album.getTitle());
                     model.getAssociationMap().remove(album.getTitle(), "");
+                    if(!model.getAssociationMap().containsEntry(album.getTitle(),
+                            trackName))
+                        return "Action failed";
+                }
+                case (0) -> {
+                    return "The action was interrupted by the user";
                 }
             }
-            if (model.getAssociationMap().containsEntry(album.getTitle(),
-                    model.getTrackList().get(model.getTrackList().size() - 1).getTitle()))
-                return "Action successfully completed";
-            else
-                return "Action failed";
-
         }
     }
 
@@ -428,9 +432,12 @@ public class Controller {
         String trackName;
         String codeOfResult = "";
         albumName = view.getString("Input name of album for edit: ");
+        if(getAlbum(albumName)==null){
+            return "Album doesn't exist";
+        }
         while (true) {
             view.printSecondLvlTrackMenu(codeOfResult, true);
-            if ((choose = isValidChoose(2)) == -1) {
+            if ((choose = isValidChoose(3)) == -1) {
                 codeOfResult = "You typed to incorrect key, please try again ;)";
                 continue;
             }
@@ -438,15 +445,16 @@ public class Controller {
                 case (1):
                     trackName = view.getString("Input name of track for add to album: ");
                     if(getTrack(trackName)!=null){
-                        addTrackToAlbum(trackName, albumName);
+                        if(!model.getAssociationMap().containsEntry(albumName,trackName))
+                            addTrackToAlbum(trackName, albumName);
                     }
                     else return "Action failed due to user error(Track doesn't exist)";
                     break;
                 case (2):
                     trackName = view.getString("Input name of track for delete from album: ");
                     delAlbumTrack(trackName, albumName);
-                    if(model.getAssociationMap().containsEntry(albumName, trackName)){
-                        return "Action successfully completed";
+                    if(!model.getAssociationMap().containsEntry(albumName, trackName)){
+                        codeOfResult = "Action successfully completed";
                     }
                     if (model.getAssociationMap().get(albumName).isEmpty()) {
                         delAlbum(albumName);
