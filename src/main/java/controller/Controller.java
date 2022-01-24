@@ -8,8 +8,7 @@ import view.View;
 
 import java.io.*;
 
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import java.util.*;
 
 public class Controller {
     private Model model;
@@ -117,11 +116,8 @@ public class Controller {
 
     private void delTrackFromAlbums(String trackTitle) {
         Multimap <String, String> map = model.getAssociationMap();
-        for (String key : map.keySet()) {
-            if (map.get(key).contains(trackTitle)) {
-                map.remove(key, trackTitle);
-            }
-        }
+        List <Map.Entry <String, String>> list = new ArrayList<>(map.entries());
+        list.forEach((Map.Entry <String, String> it) -> map.remove(it.getKey(), trackTitle));
     }
 
     public void delTrack(String trackTitle) {
