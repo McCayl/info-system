@@ -40,67 +40,79 @@ public class Controller {
 
     private boolean isInvalidTrack(Track track) {
         if (track == null) {
+            view.print("Track is invalid");
             return true;
         }
         if (track.getTitle() == null) {
+            view.print("Name of track is invalid");
             return true;
         }
         if (track.getAuthor() == null) {
+            view.print("Author of track is invalid");
             return true;
         }
         if (track.getGenre() == null) {
+            view.print("Genre of track is invalid");
             return true;
         }
-        return track.getLength() <= 0;
+        if(track.getLength()<=0){
+            view.print("Length of track is invalid");
+        }
+        return false;
+    }
+
+    private boolean canAddTrack(Track track){
+        if(isInvalidTrack(track)){
+            return false;
+        }
+        if (model.getTrackList().contains(track)) {
+            view.print("Track already exist");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean canAddAlbum(Album album){
+        if(isInvalidAlbum(album)){
+            return false;
+        }
+        if (model.getAlbums().contains(album)) {
+            view.print("Album already exist");
+            return false;
+        }
+        return true;
     }
 
     private boolean isInvalidAlbum(Album album) {
         if (album == null) {
+            view.print("Album doesn't exist");
             return true;
         }
         if (album.getTitle() == null) {
+            view.print("Name of album is invalid");
             return true;
         }
-        return album.getYear() <= 0;
+        if(album.getYear() <= 0){
+            view.print("Year of album is invalid");
+            return true;
+        }
+        return false;
     }
 
     public void addTrack(Track track) {
-        if (isInvalidTrack(track)) {
-            view.print("Track is invalid");
-            return;
-        }
-        if (model.getTrackList().contains(track)) {
-            view.print("Track already exist");
-            return;
-        }
         model.getTrackList().add(track);
+        view.print("Action successfully performed(track create)");
     }
 
     public void addTrackToAlbum(String trackTitle, String albumTitle) {
-        Multimap <String, String> map = model.getAssociationMap();
-        if (!(map.containsKey(albumTitle))) {
-            view.print("Album doesn't exist");
-            return;
-        }
-        if (map.containsEntry(albumTitle, trackTitle)) {
-            view.print("The album already contain a track with that name");
-            return;
-        }
-        map.put(albumTitle, trackTitle);
+        model.getAssociationMap().put(albumTitle, trackTitle);
         view.print("Action successfully performed(track add to album)");
     }
 
-    public void addAlbum(Album album) {
-        if (isInvalidAlbum(album)) {
-            view.print("Album is invalid");
-            return;
-        }
-        if (model.getAlbums().contains(album)) {
-            view.print("Album already exist");
-            return;
-        }
-        model.getAssociationMap().put(album.getTitle(), "");
+    public void addAlbum(Album album, String trackName) {
+        model.getAssociationMap().put(album.getTitle(), trackName);
         model.getAlbums().add(album);
+        view.print("Action successfully performed(album create)");
     }
 
     private void delTrackFromAlbums(String trackTitle) {
@@ -109,50 +121,26 @@ public class Controller {
             if (map.get(key).contains(trackTitle)) {
                 map.remove(key, trackTitle);
             }
-            //view.print("Action successfully performed");
         }
     }
 
     public void delTrack(String trackTitle) {
-        if (trackTitle == null) {
-            view.print("Album name is invalid");
-            return;
-        }
-        if (getTrack(trackTitle) == null) {
-            view.print("Track doesn't exist");
-            return;
-        }
         Track track = getTrack(trackTitle);
         delTrackFromAlbums(trackTitle);
         model.getTrackList().remove(track);
+        view.print("Action successfully performed(track delete)");
     }
 
     public void delAlbumTrack(String trackTitle, String albumTitle) {
-        if (albumTitle == null ||
-            trackTitle == null) {
-            view.print("Album or track name is invalid");
-            return;
-        }
-        if (getAlbum(albumTitle) == null ||
-            getTrack(trackTitle) == null) {
-            view.print("Album or track doesn't exist");
-            return;
-        }
         Multimap <String, String> map = model.getAssociationMap();
-        if (!(map.containsEntry(albumTitle, trackTitle))) {
-            view.print("The album does not contain a track with that name");
-            return;
-        }
         map.remove(albumTitle, trackTitle);
+        view.print("Action successfully performed(track delete from album)");
     }
 
     public void delAlbum(String albumTitle) {
-        if (albumTitle == null || getAlbum(albumTitle) == null) {
-            view.print("Album doesn't exist");
-            return;
-        }
         model.getAssociationMap().removeAll(albumTitle);
         model.getAlbums().remove(getAlbum(albumTitle));
+        view.print("Action successfully performed(album delete)");
     }
 
     public void serialize(OutputStream out) throws IOException {
@@ -210,7 +198,7 @@ public class Controller {
                     try {
                         view.print("You can write only the file name " +
                                    "then the file will be created in the program directory\n");
-                        String path = view.getString("Enter the path to the file for save: ");
+                        String path = view.askAndGetString("Enter the path to the file for save: ");
                         File file = new File(path);
                         if (!file.exists()) {
                             if (!file.createNewFile()) {
@@ -227,7 +215,7 @@ public class Controller {
                     break;
                 case (7):
                     try {
-                        String path = view.getString("Enter the path to the file for load: ");
+                        String path = view.askAndGetString("Enter the path to the file for load: ");
                         File file = new File(path);
                         if (!file.exists()) {
                             codeOfResult = "Action failed due to user error(wrong path)";
@@ -250,37 +238,36 @@ public class Controller {
 
     public void workWithSecondLvlTrackListMenu() {
         view.printTrackList(model.getTrackList());
-        view.getString("Input something to return: ");
+        view.askAndGetString("Input something to return: ");
     }
 
     public void workWithSecondLvlAlbumListMenu() {
         view.printListOfAlbums(model.getAlbums());
-        view.getString("Input something to return: ");
+        view.askAndGetString("Input something to return: ");
     }
 
     public void workWithSecondLvlAssociationsListMenu() {
         view.printListOfAssociations(model.getAssociationMap());
-        view.getString("Input something to return: ");
+        view.askAndGetString("Input something to return: ");
     }
 
     private void workWithSecondLvlTrackListEdit() {
         int choose;
-        String codeOfResult = "";
         while (true) {
-            view.printSecondLvlTrackMenu(codeOfResult, false);
+            view.printSecondLvlTrackMenu(false);
             if ((choose = isValidChoose(3)) == -1) {
-                codeOfResult = "You typed to incorrect key, please try again ;)";
+                view.printIncorrectKey();
                 continue;
             }
             switch (choose) {
                 case (1):
-                    codeOfResult = workWithAddTrackMenu();
+                    workWithAddTrackMenu();
                     break;
                 case (2):
-                    codeOfResult = workWithEditTrackMenu();
+                    workWithEditTrackMenu();
                     break;
                 case (3):
-                    codeOfResult = workWithDeleteTrackMenu();
+                    workWithDeleteTrackMenu();
                     break;
                 case (0):
                     return;
@@ -289,85 +276,41 @@ public class Controller {
     }
 
     private String workWithAddTrackMenu() {
-        Track track = new Track();
-        track.setTitle(view.getString("Input track name: "));
-        track.setAuthor(view.getString("Input author of track: "));
-        track.setGenre(view.getString("Input genre of track: "));
-        try {
-            track.setLength(Integer.parseInt(view.getString("Input length of track: ")));
-        } catch (NumberFormatException exception) {
-            return "Action failed due to user error(non-numeric value of the length)";
+        Track track = new Track(view.askAndGetString("Input track name: "),
+                view.askAndGetString("Input author of track: "),
+                view.askAndGetString("Input genre of track: "),
+                view.askAndGetInt("Input length of track: "));
+        if(canAddTrack(track)) {
+            addTrack(track);
+            return track.getTitle();
         }
-        addTrack(track);
-        return "Action successfully completed(track create)";
+        return null;
     }
 
-    private String workWithEditTrackMenu() {
+    private void workWithEditTrackMenu() {
         int choose;
-        Track track;
-        String codeOfResult = "";
-        track = getTrack(view.getString("Input name of track for edit: "));
-        if(track==null){
-            return "Action failed due to user error(Track doesn't exist)";
+        Track track = getTrack(view.askAndGetString("Input name of track for edit: "));
+        if(isInvalidTrack(track)){
+            return;
         }
         while (true) {
-            view.printTrackEditMenu(track, codeOfResult);
+            view.printTrackEditMenu(track);
             if ((choose = isValidChoose(3)) == -1) {
-                codeOfResult = "You typed to incorrect key, please try again ;)";
+                view.printIncorrectKey();
                 continue;
             }
             switch (choose) {
                 case (1):
-                    track.setAuthor(view.getString("Input new author of track: "));
-                    codeOfResult = "Action successfully completed";
+                    track.setAuthor(view.askAndGetString("Input new author of track: "));
+                    view.print("Action successfully completed");
                     break;
                 case (2):
-                    track.setGenre(view.getString("Input new genre of track: "));
-                    codeOfResult = "Action successfully completed";
+                    track.setGenre(view.askAndGetString("Input new genre of track: "));
+                    view.print("Action successfully completed");
                     break;
                 case (3):
-                    try {
-                        track.setLength(Integer.parseInt(view.getString("Input new length of track (in sec): ")));
-                    } catch (NumberFormatException exception) {
-                        codeOfResult = "Action failed due to user error(non-numeric value of the length)";
-                        break;
-                    }
-                    codeOfResult = "Action successfully completed";
-                    break;
-                case (0):
-                    return "";
-            }
-        }
-    }
-
-    private String workWithDeleteTrackMenu() {
-        Track track = getTrack(view.getString("Input name of track for delete: "));
-        if (track==null) {
-            return "Action failed due to user error(Track doesn't exist)";
-        } else {
-            delTrack(track.getTitle());
-        }
-        return "Action successfully completed";
-    }
-
-    private void workWithSecondLvlAlbumListEdit() {
-        int choose;
-        String codeOfResult = "";
-        while (true) {
-            view.printSecondLvlAlbumMenu(codeOfResult);
-            if ((choose = isValidChoose(3)) == -1) {
-                codeOfResult = "You typed to incorrect key, please try again ;)";
-                continue;
-            }
-            switch (choose) {
-                case (1):
-                    codeOfResult = workWithAddAlbumMenu();
-                    break;
-                case (2):
-                    codeOfResult = workWithEditAlbumMenu();
-                    break;
-                case (3):
-                    codeOfResult = workWithDeleteAlbumMenu();
+                    track.setLength(view.askAndGetInt("Input new length of track (in sec): "));
+                    view.print("Action successfully completed");
                     break;
                 case (0):
                     return;
@@ -375,115 +318,121 @@ public class Controller {
         }
     }
 
-    private String workWithAddAlbumMenu() {
-        int choose;
-        String codeOfResult = "";
-        Album album;
-        try {
-            album = new Album(view.getString("Input name of album: "), Integer.parseInt(view.getString("Input year of album: ")));
-        }catch (NumberFormatException exception){
-            return "Action failed due to user error(non-numeric value of the year)";
-        }
-        if(getAlbum(album.getTitle()) != null){
-            return "Album already exist";
-        }
-        view.print("The album cannot be empty, so you need to create a track in it or select an existing one\n");
-        while (true) {
-            view.printAlbumAddMenu(codeOfResult);
-            if ((choose = isValidChoose(2)) == -1) {
-                codeOfResult = "You typed to incorrect key, please try again ;)";
-                continue;
-            }
-            switch (choose) {
-                case (1) -> {
-                    if((codeOfResult = workWithAddTrackMenu()).contains("failed")){
-                        continue;
-                    }
-                    addAlbum(album);
-                    addTrackToAlbum(model.getTrackList().get(model.getTrackList().size() - 1).getTitle(), album.getTitle());
-                    model.getAssociationMap().remove(album.getTitle(), "");
-                    if (!model.getAssociationMap().containsEntry(album.getTitle(),
-                            model.getTrackList().get(model.getTrackList().size() - 1).getTitle()))
-                        return "Action failed";
-                }
-                case (2) -> {
-                    if (model.getTrackList().isEmpty()) {
-                        codeOfResult = "Action failed due to user error(Tracks don't exist)";
-                        continue;
-                    }
-                    addAlbum(album);
-                    String trackName = view.getString("Input name of track for add in album: ");
-                    addTrackToAlbum(trackName, album.getTitle());
-                    model.getAssociationMap().remove(album.getTitle(), "");
-                    if(!model.getAssociationMap().containsEntry(album.getTitle(),
-                            trackName))
-                        return "Action failed";
-                }
-                case (0) -> {
-                    return "The action was interrupted by the user";
-                }
-            }
+    private void workWithDeleteTrackMenu() {
+        Track track = getTrack(view.askAndGetString("Input name of track for delete: "));
+        if (!isInvalidTrack(track)) {
+            delTrack(track.getTitle());
         }
     }
 
-    private String workWithEditAlbumMenu() {
+    private void workWithSecondLvlAlbumListEdit() {
         int choose;
-        String albumName;
-        String trackName;
-        String codeOfResult = "";
-        albumName = view.getString("Input name of album for edit: ");
-        if(getAlbum(albumName)==null){
-            return "Album doesn't exist";
-        }
         while (true) {
-            view.printSecondLvlTrackMenu(codeOfResult, true);
+            view.printSecondLvlAlbumMenu();
             if ((choose = isValidChoose(3)) == -1) {
-                codeOfResult = "You typed to incorrect key, please try again ;)";
+                view.printIncorrectKey();
                 continue;
             }
             switch (choose) {
                 case (1):
-                    trackName = view.getString("Input name of track for add to album: ");
-                    if(getTrack(trackName)!=null){
-                        if(!model.getAssociationMap().containsEntry(albumName,trackName))
-                            addTrackToAlbum(trackName, albumName);
-                    }
-                    else return "Action failed due to user error(Track doesn't exist)";
+                    workWithAddAlbumMenu();
                     break;
                 case (2):
-                    trackName = view.getString("Input name of track for delete from album: ");
-                    delAlbumTrack(trackName, albumName);
-                    if(!model.getAssociationMap().containsEntry(albumName, trackName)){
-                        codeOfResult = "Action successfully completed";
-                    }
-                    if (model.getAssociationMap().get(albumName).isEmpty()) {
-                        delAlbum(albumName);
-                        return "Action successfully completed";
-                    }
+                    workWithEditAlbumMenu();
                     break;
                 case (3):
-                    int year;
-                    try{
-                        year = Integer.parseInt(view.getString("Input year to change: "));
-                    } catch (NumberFormatException exception){
-                        return "Action failed due to user error(non-numeric value of the year)";
-                    }
-                    getAlbum(albumName).setYear(year);
-                    if(getAlbum(albumName).getYear() == year)
-                        return "Action successfully performed";
+                    workWithDeleteAlbumMenu();
                     break;
                 case (0):
-                    return "";
+                    return;
             }
         }
     }
 
-    private String workWithDeleteAlbumMenu() {
-        String albumName = view.getString("Input name of album for delete: ");
-        if(getAlbum(albumName)!=null) {
-            delAlbum(albumName);
-            return "Action successfully completed";
+    private void workWithAddAlbumMenu() {
+        int choose;
+        Album album = new Album(view.askAndGetString("Input name of album: "), view.askAndGetInt("Input year of album: "));
+        if(!canAddAlbum(album)){
+            return;
         }
-        else return "Action failed due to user error(Album doesn't exist)";
+        view.print("The album cannot be empty, so you need to create a track in it or select an existing one\n");
+        while (true) {
+            view.printAlbumAddMenu();
+            if ((choose = isValidChoose(2)) == -1) {
+                view.printIncorrectKey();
+                continue;
+            }
+            switch (choose) {
+                case (1) -> {
+                    addAlbum(album, workWithAddTrackMenu());
+                    return;
+                }
+                case (2) -> {
+                    if (model.getTrackList().isEmpty()) {
+                        view.print("Action failed due to user error(Tracks don't exist)");
+                        continue;
+                    }
+                    String trackName = view.askAndGetString("Input name of track for add in album: ");
+                    addAlbum(album, trackName);
+                    return;
+                }
+                case (0) -> {
+                    return;
+                }
+            }
+        }
+    }
+
+    private void workWithEditAlbumMenu() {
+        int choose;
+        String albumName;
+        String trackName;
+        albumName = view.askAndGetString("Input name of album for edit: ");
+        if(isInvalidAlbum(getAlbum(albumName))){
+            return;
+        }
+        while (true) {
+            view.printSecondLvlTrackMenu(true);
+            if ((choose = isValidChoose(3)) == -1) {
+                view.printIncorrectKey();
+                continue;
+            }
+            switch (choose) {
+                case (1):
+                    trackName = view.askAndGetString("Input name of track for add to album: ");
+                    if(isInvalidTrack(getTrack(trackName))){
+                        continue;
+                    }
+                    if(!model.getAssociationMap().containsEntry(albumName,trackName)){
+                        addTrackToAlbum(trackName, albumName);
+                        continue;
+                    }
+                    break;
+                case (2):
+                    trackName = view.askAndGetString("Input name of track for delete from album: ");
+                    if(isInvalidTrack(getTrack(trackName))){
+                        continue;
+                    }
+                    delAlbumTrack(trackName, albumName);
+                    if (model.getAssociationMap().get(albumName).isEmpty()) {
+                        delAlbum(albumName);
+                    }
+                    break;
+                case (3):
+                    int year;
+                    year = view.askAndGetInt("Input year to change: ");
+                    getAlbum(albumName).setYear(year);
+                    break;
+                case (0):
+                    return;
+            }
+        }
+    }
+
+    private void workWithDeleteAlbumMenu() {
+        String albumName = view.askAndGetString("Input name of album for delete: ");
+        if(!isInvalidAlbum(getAlbum(albumName))) {
+            delAlbum(albumName);
+        }
     }
 }

@@ -9,7 +9,12 @@ public class Track implements Serializable {
     private String author;
     private String genre;
     private int length;
-    
+    public Track(String title, String author, String genre, int length){
+        this.title = title;
+        this.author = author;
+        this.genre = genre;
+        this.length = length;
+    }
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
     public String getAuthor() { return author; }

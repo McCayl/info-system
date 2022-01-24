@@ -1,6 +1,7 @@
 package view;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import com.google.common.collect.Multimap;
@@ -8,18 +9,46 @@ import model.Album;
 import model.Track;
 
 public class View {
-    private Scanner scanner;
+    private final Scanner scanner;
     public View() {
         scanner = new Scanner(System.in);
     }
 
-    public String getString(String str) {
+    public void printIncorrectKey(){
+        System.out.println("You typed to incorrect key, please try again ;)");
+    }
+
+    public String askAndGetString(String str) {
         System.out.print(str);
         String string;
         do {
             string = scanner.nextLine();
         } while(string.isEmpty());
         return string;
+    }
+
+    public int askAndGetInt(String str){
+        System.out.print(str);
+        int number;
+        do {
+            try {
+                number = getInt();
+            }
+            catch (NoSuchElementException exception){
+                System.out.println("You didn't enter a number, try again");
+                number = 0;
+            }
+        } while (number <= 0);
+        return number;
+    }
+
+    public int getInt(){
+        int num;
+        num = scanner.nextInt();
+        if (num<=0){
+           System.out.print("The number must be greater than 0, try again");
+        }
+        return num;
     }
 
     public void print(String str){
@@ -68,7 +97,7 @@ public class View {
     }
 
     public void printFirstLvlMenu(String result) {
-        System.out.println(result + "\n");
+        System.out.println(result);
         System.out.println(
                 """
                         Music Library
@@ -83,8 +112,7 @@ public class View {
                         0. EXIT""");
     }
 
-    public void printSecondLvlTrackMenu(String result, boolean isAlbum) {
-        System.out.println(result + "\n");
+    public void printSecondLvlTrackMenu(boolean isAlbum) {
         if(!isAlbum)
             System.out.println(
                     """
@@ -103,8 +131,7 @@ public class View {
                             0. Back""");
     }
 
-    public void printSecondLvlAlbumMenu(String result) {
-        System.out.println(result + "\n");
+    public void printSecondLvlAlbumMenu() {
         System.out.println(
                 """
                         Choose action:
@@ -114,8 +141,7 @@ public class View {
                         0. Back""");
     }
 
-    public void printAlbumAddMenu(String result) {
-        System.out.println(result + "\n");
+    public void printAlbumAddMenu() {
         System.out.println(
                 """
                         Choose action:
@@ -124,8 +150,8 @@ public class View {
                         0. Back""");
     }
 
-    public void printTrackEditMenu(Track track, String result) {
-        System.out.println(result + "\n");
+    public void printTrackEditMenu(Track track) {
+
         printTrack(track);
         System.out.println(
                 """
