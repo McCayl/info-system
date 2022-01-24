@@ -40,10 +40,7 @@ public class Track implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Track track = (Track) o;
-        return length == track.length &&
-                Objects.equal(title, track.title) &&
-                Objects.equal(author, track.author) &&
-                Objects.equal(genre, track.genre);
+        return Objects.equal(title, track.title);
     }
 
     @Override
