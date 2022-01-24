@@ -1,6 +1,7 @@
 package view;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -10,11 +11,12 @@ import model.Track;
 
 public class View {
     private final Scanner scanner;
+
     public View() {
         scanner = new Scanner(System.in);
     }
 
-    public void printIncorrectKey(){
+    public void printIncorrectKey() {
         System.out.println("You typed to incorrect key, please try again ;)");
     }
 
@@ -23,35 +25,34 @@ public class View {
         String string;
         do {
             string = scanner.nextLine();
-        } while(string.isEmpty());
+        } while (string.isEmpty());
         return string;
     }
 
-    public int askAndGetInt(String str){
-        System.out.print(str);
+    public int askAndGetInt(String str) {
         int number;
         do {
-            try {
-                number = getInt();
-            }
-            catch (NoSuchElementException exception){
-                System.out.println("You didn't enter a number, try again");
-                number = 0;
-            }
+            System.out.print(str);
+            number = getInt();
         } while (number <= 0);
         return number;
     }
 
-    public int getInt(){
+    public int getInt() {
         int num;
-        num = scanner.nextInt();
-        if (num<=0){
-           System.out.print("The number must be greater than 0, try again");
+        try {
+            num = Integer.parseInt(scanner.nextLine());
+            if (num <= 0) {
+                System.out.println("The number must be greater than 0, try again");
+            }
+        } catch (NumberFormatException exception) {
+            System.out.println("You didn't enter a number, try again");
+            num = 0;
         }
         return num;
     }
 
-    public void print(String str){
+    public void print(String str) {
         System.out.println(str);
     }
 
@@ -60,39 +61,38 @@ public class View {
     }
 
     public void printTrackList(ArrayList<Track> trackList) {
-        if(trackList == null || trackList.isEmpty()) {
+        if (trackList == null || trackList.isEmpty()) {
             System.out.println("List of tracks is empty\n");
             return;
-        }
-        else {
+        } else {
             System.out.println("List of tracks: ");
         }
         for (int i = 0; i != trackList.size(); i++) {
-            System.out.print((i+1) + ". ");
+            System.out.print((i + 1) + ". ");
             printTrack(trackList.get(i));
         }
     }
-    
-    public void printListOfAlbums(ArrayList <Album> albums) {
-        if(albums == null || albums.isEmpty()) {
+
+    public void printListOfAlbums(ArrayList<Album> albums) {
+        if (albums == null || albums.isEmpty()) {
             System.out.println("List of albums is empty\n");
             return;
         }
         System.out.println("Album title list: ");
         for (int i = 0; i != albums.size(); i++) {
-            System.out.printf(i+1 + ". %s\n", albums.get(i).getTitle());
+            System.out.printf(i + 1 + ". %s\n", albums.get(i).getTitle());
         }
         System.out.println("\n");
     }
 
-    public void printListOfAssociations(Multimap<String, String> associationMap){
-        if(associationMap == null || associationMap.isEmpty()) {
+    public void printListOfAssociations(Multimap<String, String> associationMap) {
+        if (associationMap == null || associationMap.isEmpty()) {
             System.out.println("List of associations is empty\n");
             return;
         }
         System.out.println("List of associations: ");
-        for (String album: associationMap.keySet()) {
-                System.out.print(album + ": " + associationMap.get(album) + "\n");
+        for (String album : associationMap.keySet()) {
+            System.out.print(album + ": " + associationMap.get(album) + "\n");
         }
     }
 
@@ -112,7 +112,7 @@ public class View {
     }
 
     public void printSecondLvlTrackMenu(boolean isAlbum) {
-        if(!isAlbum)
+        if (!isAlbum)
             System.out.println(
                     """
                             Choose action:

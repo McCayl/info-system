@@ -139,6 +139,19 @@ public class Controller {
         view.print("Action successfully performed(album delete)");
     }
 
+    public void delEmptyAlbums(){
+        Multimap<String, String> map = model.getAssociationMap();
+        ArrayList<String> names = new ArrayList<>();
+        for(Album album : model.getAlbums()){
+            names.add(album.getTitle());
+        }
+        for(String name : names){
+            if(!map.containsKey(name)) {
+                delAlbum(name);
+            }
+        }
+    }
+
     public void serialize(OutputStream out) throws IOException {
         ObjectOutputStream objectOut = new ObjectOutputStream(out);
         objectOut.writeObject(model);
@@ -312,6 +325,8 @@ public class Controller {
     private void workWithDeleteTrackMenu() {
         Track track = getTrack(view.askAndGetString("Input name of track for delete: "));
         if (!isInvalidTrack(track)) {
+            delTrackFromAlbums(track.getTitle());
+            delEmptyAlbums();
             delTrack(track.getTitle());
         }
     }
