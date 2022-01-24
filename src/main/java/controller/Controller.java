@@ -169,11 +169,10 @@ public class Controller {
 
     public void workWithFirstLvlMenu() {
         int choose;
-        String codeOfResult = "";
         while (true) {
-            view.printFirstLvlMenu(codeOfResult);
+            view.printFirstLvlMenu();
             if ((choose = isValidChoose(7)) == -1) {
-                codeOfResult = "You typed to incorrect key, please try again ;)";
+                view.printIncorrectKey();
                 continue;
             }
             switch (choose) {
@@ -188,29 +187,24 @@ public class Controller {
                     break;
                 case (4):
                     workWithSecondLvlTrackListEdit();
-                    codeOfResult = "";
                     break;
                 case (5):
                     workWithSecondLvlAlbumListEdit();
-                    codeOfResult = "";
                     break;
                 case (6):
                     try {
-                        view.print("You can write only the file name " +
-                                   "then the file will be created in the program directory\n");
-                        String path = view.askAndGetString("Enter the path to the file for save: ");
+                        String path = view.askAndGetString("Enter the path to the file(with name) " +
+                                "or just name(file will be created in the program directory) for save: ");
                         File file = new File(path);
-                        if (!file.exists()) {
-                            if (!file.createNewFile()) {
-                                throw new IOException();
-                            }
-                        }
+                        file.createNewFile();
                         OutputStream output = new FileOutputStream(path);
                         serialize(output);
-                        codeOfResult = "Action successfully completed";
+                        view.print("Action successfully completed");
                         output.close();
                     } catch (IOException exception) {
-                        codeOfResult = "Action failed due to user error(wrong path)";
+                        view.print("Action failed due to user error(wrong path)");
+                    } catch (SecurityException exception) {
+                        view.print("Action failed due to user error(there is no access to the file by this path)");
                     }
                     break;
                 case (7):
@@ -218,16 +212,17 @@ public class Controller {
                         String path = view.askAndGetString("Enter the path to the file for load: ");
                         File file = new File(path);
                         if (!file.exists()) {
-                            codeOfResult = "Action failed due to user error(wrong path)";
+                            view.print("Action failed due to user error(wrong path)");
                             continue;
                         }
                         InputStream input = new FileInputStream(path);
                         deserialize(input);
-                        codeOfResult = "Action successfully completed";
                         input.close();
+                        view.print("Action successfully completed");
                     } catch (IOException | ClassNotFoundException exception) {
-                        exception.printStackTrace();
-                        codeOfResult = "Action failed due to user error(wrong path)";
+                        view.print("Action failed due to user error(wrong path)");
+                    } catch (SecurityException exception) {
+                        view.print("Action failed due to user error(there is no access to the file by this path)");
                     }
                     break;
                 case (0):
@@ -364,8 +359,11 @@ public class Controller {
             }
             switch (choose) {
                 case (1) -> {
-                    addAlbum(album, workWithAddTrackMenu());
-                    return;
+                    String trackName = workWithAddTrackMenu();
+                    if(trackName != null) {
+                        addAlbum(album, trackName);
+                        return;
+                    }
                 }
                 case (2) -> {
                     if (model.getTrackList().isEmpty()) {

@@ -96,8 +96,7 @@ public class View {
         }
     }
 
-    public void printFirstLvlMenu(String result) {
-        System.out.println(result);
+    public void printFirstLvlMenu() {
         System.out.println(
                 """
                         Music Library
