@@ -22,8 +22,7 @@ public class Album implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Album album = (Album) o;
-        return year == album.year &&
-                Objects.equal(title, album.title);
+        return Objects.equal(title, album.title);
     }
 
     @Override
