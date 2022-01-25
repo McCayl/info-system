@@ -117,12 +117,24 @@ public class Controller {
     private void delTrackFromAlbums(String trackTitle) {
         Multimap <String, String> map = model.getAssociationMap();
         List <Map.Entry <String, String>> list = new ArrayList<>(map.entries());
-        list.forEach((Map.Entry <String, String> it) -> map.remove(it.getKey(), trackTitle));
+        list.forEach(it -> map.remove(it.getKey(), trackTitle));
+    }
+
+    private void delEmptyAlbums() {
+        Multimap<String, String> map = model.getAssociationMap();
+        List <String> names = new ArrayList<>();
+        model.getAlbums().forEach(it -> names.add(it.getTitle()));
+        names.forEach(it -> {
+            if (!(map.containsKey(it))) {
+                model.getAlbums().remove(getAlbum(it));
+            }
+        });
     }
 
     public void delTrack(String trackTitle) {
         Track track = getTrack(trackTitle);
         delTrackFromAlbums(trackTitle);
+        delEmptyAlbums();
         model.getTrackList().remove(track);
         view.print("Action successfully performed(track delete)");
     }
@@ -130,6 +142,7 @@ public class Controller {
     public void delAlbumTrack(String trackTitle, String albumTitle) {
         Multimap <String, String> map = model.getAssociationMap();
         map.remove(albumTitle, trackTitle);
+        delEmptyAlbums();
         view.print("Action successfully performed(track delete from album)");
     }
 
@@ -137,19 +150,6 @@ public class Controller {
         model.getAssociationMap().removeAll(albumTitle);
         model.getAlbums().remove(getAlbum(albumTitle));
         view.print("Action successfully performed(album delete)");
-    }
-
-    public void delEmptyAlbums(){
-        Multimap<String, String> map = model.getAssociationMap();
-        ArrayList<String> names = new ArrayList<>();
-        for(Album album : model.getAlbums()){
-            names.add(album.getTitle());
-        }
-        for(String name : names){
-            if(!map.containsKey(name)) {
-                delAlbum(name);
-            }
-        }
     }
 
     public void serialize(OutputStream out) throws IOException {
@@ -325,8 +325,6 @@ public class Controller {
     private void workWithDeleteTrackMenu() {
         Track track = getTrack(view.askAndGetString("Input name of track for delete: "));
         if (!isInvalidTrack(track)) {
-            delTrackFromAlbums(track.getTitle());
-            delEmptyAlbums();
             delTrack(track.getTitle());
         }
     }
