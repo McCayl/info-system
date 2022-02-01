@@ -380,6 +380,10 @@ public class Controller {
                         continue;
                     }
                     String trackName = view.askAndGetString("Input name of track for add in album: ");
+                    if (getTrack(trackName) == null) {
+                        view.print("Track doesn't exist");
+                        continue;
+                    }
                     addAlbum(album, trackName);
                     return;
                 }
