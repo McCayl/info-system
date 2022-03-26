@@ -20,21 +20,17 @@ public class Controller {
     }
 
     private Album getAlbum(String albumTitle) {
-        for (Album el : model.getAlbums()) {
-            if (el.getTitle().equals(albumTitle)) {
-                return el;
-            }
-        }
-        return null;
+        return model.getAlbums().stream()
+                .filter(album -> album.getTitle().equals(albumTitle))
+                .findAny()
+                .orElse(null);
     }
 
     private Track getTrack(String trackTitle) {
-        for (Track el : model.getTrackList()) {
-            if (el.getTitle().equals(trackTitle)) {
-                return el;
-            }
-        }
-        return null;
+        return model.getTrackList().stream()
+                .filter(track -> track.getTitle().equals(trackTitle))
+                .findAny()
+                .orElse(null);
     }
 
     private boolean isInvalidTrack(Track track) {
